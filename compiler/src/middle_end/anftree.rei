@@ -294,6 +294,12 @@ type comp_expression = {
 }
 
 [@deriving sexp]
+and closure_status =
+  | Uncomputed
+  | Precomputed(list(Ident.t))
+  | Unnecessary
+
+[@deriving sexp]
 and comp_expression_desc =
   | CImmExpr(imm_expression)
   | CPrim0(prim0)
@@ -330,6 +336,7 @@ and comp_expression_desc =
       option(string),
       list((Ident.t, allocation_type)),
       (anf_expression, allocation_type),
+      closure_status,
     )
   | CBytes(bytes)
   | CString(string)

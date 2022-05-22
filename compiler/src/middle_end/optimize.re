@@ -1,6 +1,8 @@
 open Anftree;
 
 let analysis_passes = [
+  Analyze_globals.analyze,
+  Analyze_function_calls.analyze,
   Analyze_manual_memory_management.analyze,
   Analyze_purity.analyze,
   Analyze_tail_calls.analyze,
@@ -19,6 +21,7 @@ let optimization_passes = [
   Optimize_dead_statements.optimize,
   Optimize_inline_wasm.optimize,
   Optimize_local_mutations.optimize,
+  Optimize_closures.optimize,
 ];
 
 module ClearAnalysesArg: Anf_iterator.IterArgument = {

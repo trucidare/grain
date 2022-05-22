@@ -172,7 +172,7 @@ let write_universal_exports =
               );
             let function_call =
               switch (direct) {
-              | Direct(name) =>
+              | Direct({name}) =>
                 Expression.Call.make(
                   wasm_mod,
                   Hashtbl.find(exported_names, name),

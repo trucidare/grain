@@ -140,7 +140,7 @@ let rec analyze_comp_expression =
       List.for_all(x => x, branches_purities);
     | CApp(_) => false
     | CAppBuiltin(_) => false
-    | CLambda(_, _, (body, _)) =>
+    | CLambda(_, _, (body, _), _) =>
       analyze_anf_expression(body);
       true;
     | CNumber(_)

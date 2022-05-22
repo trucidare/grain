@@ -35,7 +35,7 @@ let rec anf_free_vars_help = (env, a: anf_expression) =>
 
 and comp_free_vars_help = (env, c: comp_expression) =>
   switch (c.comp_desc) {
-  | CLambda(_, args, (body, _)) =>
+  | CLambda(_, args, (body, _), _) =>
     anf_free_vars_help(
       Ident.Set.union(
         env,

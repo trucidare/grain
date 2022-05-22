@@ -1633,7 +1633,7 @@ and components_of_module_maker = ((env, sub, path, mty)) =>
                   ReprFunction(
                     List.map(_ => WasmI32, args),
                     [WasmI32],
-                    Direct(Ident.unique_name(id)),
+                    Direct({name: Ident.unique_name(id), closure: false}),
                   )
                 };
               let get_path = name =>
@@ -1699,7 +1699,7 @@ and components_of_module_maker = ((env, sub, path, mty)) =>
               ReprFunction(
                 List.map(_ => WasmI32, args),
                 [WasmI32],
-                Direct(Ident.unique_name(id)),
+                Direct({name: Ident.unique_name(id), closure: false}),
               )
             };
           let get_path = name =>
@@ -1883,7 +1883,7 @@ and store_extension = (~check, id, ext, env) => {
         ReprFunction(
           List.map(_ => WasmI32, args),
           [WasmI32],
-          Direct(Ident.unique_name(id)),
+          Direct({name: Ident.unique_name(id), closure: false}),
         )
       };
     let path = PIdent(Ident.create(cstr.cstr_name));

@@ -569,28 +569,37 @@ let known_function = f =>
   };
 
 let compile_lambda =
-    (~name=?, id, env, args, body, attrs, loc): Mashtree.closure_data => {
+    (~name=?, ~closure_status, id, env, args, body, attrs, loc)
+    : option(Mashtree.closure_data) => {
   register_function(Internal(id));
 
   let (body, return_type) = body;
-  // NOTE: we special-case `id`, since we want to
-  //       have simply-recursive uses of identifiers use
-  //       argument 0 ("$self") rather than do the self-reference
-  //       via a closure variable (this enables a large class
-  //       of recursive functions to be garbage-collectible, since
-  //       Grain's garbage collector does not currently collect
-  //       cyclic reference chains)
-  let used_var_set = Ident.Set.remove(id, Anf_utils.anf_free_vars(body));
-  let arg_vars = List.map(((arg, _)) => arg, args);
-  let global_vars =
-    Ident.fold_all((id, _, acc) => [id, ...acc], global_table^, []);
-  let accessible_var_set =
-    Ident.Set.union(
-      global_imports^,
-      Ident.Set.of_list(arg_vars @ global_vars),
-    );
-  let free_var_set = Ident.Set.diff(used_var_set, accessible_var_set);
-  let free_vars = Ident.Set.elements(free_var_set);
+
+  let (free_vars, has_closure) =
+    switch (closure_status) {
+    | Unnecessary => ([], false)
+    | Precomputed(vars) => (vars, true)
+    | Uncomputed =>
+      // NOTE: we special-case `id`, since we want to
+      //       have simply-recursive uses of identifiers use
+      //       argument 0 ("$self") rather than do the self-reference
+      //       via a closure variable (this enables a large class
+      //       of recursive functions to be garbage-collectible, since
+      //       Grain's garbage collector does not currently collect
+      //       cyclic reference chains)
+      let used_var_set = Ident.Set.remove(id, Anf_utils.anf_free_vars(body));
+      let arg_vars = List.map(((arg, _)) => arg, args);
+      let global_vars =
+        Ident.fold_all((id, _, acc) => [id, ...acc], global_table^, []);
+      let accessible_var_set =
+        Ident.Set.union(
+          global_imports^,
+          Ident.Set.of_list(arg_vars @ global_vars),
+        );
+      let free_var_set = Ident.Set.diff(used_var_set, accessible_var_set);
+      (Ident.Set.elements(free_var_set), true);
+    };
+
   /* Bind all non-arguments in the function body to
      their respective closure slots */
   let free_binds =
@@ -654,11 +663,15 @@ let compile_lambda =
     loc,
   };
   worklist_enqueue(worklist_item);
-  {
-    func_idx,
-    arity: Int32.of_int(arity),
-    /* These variables should be in scope when the lambda is constructed. */
-    variables: List.map(id => MImmBinding(find_id(id, env)), free_vars),
+  if (has_closure) {
+    Some({
+      func_idx,
+      arity: Int32.of_int(arity),
+      /* These variables should be in scope when the lambda is constructed. */
+      variables: List.map(id => MImmBinding(find_id(id, env)), free_vars),
+    });
+  } else {
+    None;
   };
 };
 
@@ -900,7 +913,7 @@ let rec compile_comp = (~id=?, env, c) => {
         MRecordSet(idx, compile_imm(env, arg)),
         compile_imm(env, record),
       )
-    | CLambda(name, args, body) =>
+    | CLambda(name, args, body, closure_status) =>
       let (body, return_type) = body;
       let body = (body, [return_type]);
       // Functions typically have an identifier associated with them, though
@@ -912,19 +925,21 @@ let rec compile_comp = (~id=?, env, c) => {
         | Some(id) => id
         | None => Ident.create("func")
         };
-      MAllocate(
-        MClosure(
-          compile_lambda(
-            ~name?,
-            id,
-            env,
-            args,
-            body,
-            c.comp_attributes,
-            c.comp_loc,
-          ),
-        ),
-      );
+      let cdata =
+        compile_lambda(
+          ~name?,
+          ~closure_status,
+          id,
+          env,
+          args,
+          body,
+          c.comp_attributes,
+          c.comp_loc,
+        );
+      switch (cdata) {
+      | Some(cdata) => MAllocate(MClosure(cdata))
+      | None => MImmediate(MImmConst(MConstLiteral(MConstI32(0l))))
+      };
     | CApp((f, (argsty, retty)), args, true) =>
       let func_type = (argsty, [retty]);
       let closure = compile_imm(env, f);
@@ -1010,37 +1025,21 @@ and compile_anf_expr = (env, a) =>
       };
     };
     let (new_env, locations) = get_locs(env, binds);
-    switch (recflag) {
-    | Nonrecursive =>
-      let instrs =
-        List.fold_right2(
-          (loc, (id, rhs), acc) =>
-            [
-              {
-                instr_desc: MStore([(loc, compile_comp(~id, env, rhs))]),
-                instr_loc: rhs.comp_loc,
-              },
-              ...acc,
-            ],
-          locations,
-          binds,
-          [],
-        );
-      instrs @ compile_anf_expr(new_env, body);
-    | Recursive =>
-      let binds =
-        List.fold_left2(
-          (acc, loc, (id, rhs)) =>
-            [(loc, compile_comp(~id, new_env, rhs)), ...acc],
-          [],
-          locations,
-          binds,
-        );
-      [
-        {instr_desc: MStore(List.rev(binds)), instr_loc: a.anf_loc},
-        ...compile_anf_expr(new_env, body),
-      ];
-    };
+    let instrs =
+      List.fold_right2(
+        (loc, (id, rhs), acc) =>
+          [
+            {
+              instr_desc: MStore([(loc, compile_comp(~id, env, rhs))]),
+              instr_loc: rhs.comp_loc,
+            },
+            ...acc,
+          ],
+        locations,
+        binds,
+        [],
+      );
+    instrs @ compile_anf_expr(new_env, body);
   | AEComp(c) => [compile_comp(env, c)]
   };
 
@@ -1433,8 +1432,6 @@ let transl_anf_program =
   reset_global();
   worklist_reset();
   clear_known_functions();
-
-  Analyze_function_calls.analyze(anf_prog);
 
   let (imports, setups, env) =
     lift_imports(initial_compilation_env, anf_prog.imports.specs);
