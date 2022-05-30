@@ -36,6 +36,7 @@ type worklist_elt = {
   env: compilation_env,
   args: list(Types.allocation_type),
   return_type: list(Types.allocation_type),
+  has_closure: bool,
   id: Ident.t,
   name: option(string),
   attrs: attributes,
@@ -652,6 +653,7 @@ let compile_lambda =
     name,
     args,
     return_type,
+    has_closure,
     attrs,
     stack_size: {
       stack_size_ptr,
@@ -733,6 +735,7 @@ let compile_wrapper =
     name,
     args: [Types.Managed, ...args],
     return_type,
+    has_closure: true,
     stack_size: {
       stack_size_ptr: 0,
       stack_size_i32: 0,
@@ -1063,7 +1066,7 @@ let compile_remaining_worklist = () => {
   let compile_one =
       (
         funcs,
-        {id, name, args, return_type, stack_size, attrs, loc} as cur: worklist_elt,
+        {id, name, args, return_type, has_closure, stack_size, attrs, loc} as cur: worklist_elt,
       ) => {
     let body = compile_worklist_elt(cur);
     let func = {
@@ -1071,6 +1074,7 @@ let compile_remaining_worklist = () => {
       name,
       args,
       return_type,
+      has_closure,
       body,
       stack_size,
       attrs,
@@ -1085,7 +1089,7 @@ let lift_imports = (env, imports) => {
   let process_shape = (mut, shape) =>
     switch (shape) {
     | GlobalShape(alloc) => MGlobalImport(alloc, mut)
-    | FunctionShape(inputs, outputs) => MFuncImport(inputs, outputs)
+    | FunctionShape({args, returns}) => MFuncImport(args, returns)
     };
 
   let process_import =
@@ -1221,8 +1225,8 @@ let lift_imports = (env, imports) => {
         [
           switch (imp_shape) {
           | GlobalShape(_) => []
-          | FunctionShape(inputs, outputs) =>
-            if (List.length(outputs) > 1) {
+          | FunctionShape({args, returns}) =>
+            if (List.length(returns) > 1) {
               failwith("NYI: Multi-result wrapper");
             } else {
               [
@@ -1240,8 +1244,8 @@ let lift_imports = (env, imports) => {
                                   imp_use_id,
                                   env,
                                   Ident.unique_name(mimp_id),
-                                  inputs,
-                                  outputs,
+                                  args,
+                                  returns,
                                 ),
                               ),
                             ),
@@ -1286,7 +1290,11 @@ let transl_signature = (~functions, ~imports, signature) => {
     (func: mash_function) =>
       switch (func.name) {
       | Some(name) =>
-        Ident_tbl.add(func_map, func.id, Ident.unique_name(func.id))
+        Ident_tbl.add(
+          func_map,
+          func.id,
+          (Ident.unique_name(func.id), func.has_closure),
+        )
       | None => ()
       },
     functions,
@@ -1294,9 +1302,13 @@ let transl_signature = (~functions, ~imports, signature) => {
   List.iter(
     imp =>
       switch (imp.imp_shape) {
-      | FunctionShape(_) =>
+      | FunctionShape({has_closure}) =>
         let internal_name = Ident.unique_name(imp.imp_use_id);
-        Ident_tbl.add(func_map, imp.imp_use_id, internal_name);
+        Ident_tbl.add(
+          func_map,
+          imp.imp_use_id,
+          (internal_name, has_closure),
+        );
       | _ => ()
       },
     imports.specs,
@@ -1329,7 +1341,7 @@ let transl_signature = (~functions, ~imports, signature) => {
           switch (val_repr) {
           | ReprFunction(args, rets, _) =>
             switch (Ident_tbl.find_opt(func_map, id)) {
-            | Some(internal_name) =>
+            | Some((internal_name, closure)) =>
               let external_name = Ident.name(vid);
               exports :=
                 [
@@ -1343,7 +1355,12 @@ let transl_signature = (~functions, ~imports, signature) => {
                 vid,
                 {
                   ...vd,
-                  val_repr: ReprFunction(args, rets, Direct(external_name)),
+                  val_repr:
+                    ReprFunction(
+                      args,
+                      rets,
+                      Direct({name: external_name, closure}),
+                    ),
                 },
               );
             | _ =>
@@ -1379,9 +1396,21 @@ let transl_signature = (~functions, ~imports, signature) => {
                       }),
                       ...exports^,
                     ];
+
+                  let closure =
+                    switch (Ident_tbl.find_opt(func_map, cd_id)) {
+                    | Some((_, closure)) => closure
+                    | None =>
+                      failwith("Impossibe: variant function not produced")
+                    };
                   {
                     ...cd,
-                    cd_repr: ReprFunction(args, res, Direct(internal_name)),
+                    cd_repr:
+                      ReprFunction(
+                        args,
+                        res,
+                        Direct({name: internal_name, closure}),
+                      ),
                   };
                 | ReprValue(_) => cd
                 };
@@ -1412,9 +1441,19 @@ let transl_signature = (~functions, ~imports, signature) => {
                   }),
                   ...exports^,
                 ];
+              let closure =
+                switch (Ident_tbl.find_opt(func_map, ext_name)) {
+                | Some((_, closure)) => closure
+                | None => failwith("Impossibe: variant function not produced")
+                };
               {
                 ...cstr,
-                ext_repr: ReprFunction(args, res, Direct(internal_name)),
+                ext_repr:
+                  ReprFunction(
+                    args,
+                    res,
+                    Direct({name: internal_name, closure}),
+                  ),
               };
             | ReprValue(_) => cstr
             };

@@ -373,7 +373,11 @@ and anf_expression_desc =
 
 [@deriving sexp]
 type import_shape =
-  | FunctionShape(list(allocation_type), list(allocation_type))
+  | FunctionShape({
+      args: list(allocation_type),
+      returns: list(allocation_type),
+      has_closure: bool,
+    })
   | GlobalShape(allocation_type);
 
 [@deriving sexp]
