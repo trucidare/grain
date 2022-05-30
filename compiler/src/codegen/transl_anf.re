@@ -1472,6 +1472,8 @@ let transl_anf_program =
   worklist_reset();
   clear_known_functions();
 
+  let anf_prog = Optimize_closures.optimize(anf_prog);
+
   let (imports, setups, env) =
     lift_imports(initial_compilation_env, anf_prog.imports.specs);
 

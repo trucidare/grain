@@ -21,7 +21,6 @@ let optimization_passes = [
   Optimize_dead_statements.optimize,
   Optimize_inline_wasm.optimize,
   Optimize_local_mutations.optimize,
-  Optimize_closures.optimize,
 ];
 
 module ClearAnalysesArg: Anf_iterator.IterArgument = {
