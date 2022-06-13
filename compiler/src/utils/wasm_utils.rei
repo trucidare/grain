@@ -20,7 +20,8 @@ type wasm_bin_section_type =
   | Start
   | Element
   | Code
-  | Data;
+  | Data
+  | DataCount(int);
 
 [@deriving sexp]
 type wasm_bin_section = {
