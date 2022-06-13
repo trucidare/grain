@@ -4,6 +4,7 @@ functions › lambda_pat_any
  (type $none_=>_i32 (func (result i32)))
  (type $none_=>_none (func))
  (import \"_grainEnv\" \"mem\" (memory $0 0))
+ (data \"foo\")
  (import \"_grainEnv\" \"tbl\" (table $tbl 0 funcref))
  (import \"_grainEnv\" \"relocBase\" (global $relocBase_0 i32))
  (import \"_grainEnv\" \"moduleRuntimeId\" (global $moduleRuntimeId_0 i32))
@@ -16,10 +17,10 @@ functions › lambda_pat_any
  (global $x_1128 (mut i32) (i32.const 0))
  (global $GRAIN$TABLE_SIZE i32 (i32.const 0))
  (elem $elem (global.get $relocBase_0))
- (export \"memory\" (memory $0))
  (export \"_gmain\" (func $_gmain))
  (export \"_start\" (func $_start))
  (export \"GRAIN$TABLE_SIZE\" (global $GRAIN$TABLE_SIZE))
+ (export \"memory\" (memory $0))
  (func $x_1128 (param $0 i32) (param $1 i32) (result i32)
   (local $2 i32)
   (local $3 i32)
@@ -117,7 +118,7 @@ functions › lambda_pat_any
             (local.tee $0
              (call $malloc_0
               (global.get $GRAIN$EXPORT$malloc_0)
-              (i32.const 16)
+              (i32.const 12)
              )
             )
             (i32.const 1)
@@ -126,9 +127,13 @@ functions › lambda_pat_any
             (local.get $0)
             (i32.const 3)
            )
-           (i64.store offset=8
-            (local.get $0)
-            (i64.const 7303014)
+           (memory.init 0
+            (i32.add
+             (local.get $0)
+             (i32.const 8)
+            )
+            (i32.const 0)
+            (i32.const 3)
            )
            (local.get $0)
           )
