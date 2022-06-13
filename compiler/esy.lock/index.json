@@ -1,5 +1,5 @@
 {
-  "checksum": "7188c09d931f1df685009b9a738e95dc",
+  "checksum": "c2b25499d173d1f1d5baafc381b514b0",
   "root": "@grain/compiler@link-dev:./esy.json",
   "node": {
     "yarn-pkg-config@github:esy-ocaml/yarn-pkg-config#db3a0b63883606dd57c54a7158d560d6cba8cd79@d41d8cd9": {
@@ -1486,14 +1486,14 @@
         "@opam/bigstringaf@opam:0.9.0@5762d1bc"
       ]
     },
-    "@grain/libbinaryen@107.0.0@d41d8cd9": {
-      "id": "@grain/libbinaryen@107.0.0@d41d8cd9",
+    "@grain/libbinaryen@107.0.1@d41d8cd9": {
+      "id": "@grain/libbinaryen@107.0.1@d41d8cd9",
       "name": "@grain/libbinaryen",
-      "version": "107.0.0",
+      "version": "107.0.1",
       "source": {
         "type": "install",
         "source": [
-          "archive:https://registry.npmjs.org/@grain/libbinaryen/-/libbinaryen-107.0.0.tgz#sha1:f6325f0b6ae301a3603d56c8d2414b56ec596e80"
+          "archive:https://registry.npmjs.org/@grain/libbinaryen/-/libbinaryen-107.0.1.tgz#sha1:d274f7ea8365952c31f625b4572221896b99e525"
         ]
       },
       "overrides": [],
@@ -1530,7 +1530,7 @@
         "@opam/dune-build-info@opam:2.9.3@ae518c8c",
         "@opam/dune@opam:2.9.3@f57a6d69",
         "@opam/cmdliner@opam:1.1.1@03763729",
-        "@grain/binaryen.ml@0.17.0@d41d8cd9"
+        "@grain/binaryen.ml@link:../../binaryen.ml"
       ],
       "devDependencies": [
         "@reason-native/rely@github:reasonml/reason-native:rely.json#0ed854f986256e52e59aeecfa90e9af60f105b15@d41d8cd9",
@@ -1539,22 +1539,17 @@
       ],
       "installConfig": { "pnp": false }
     },
-    "@grain/binaryen.ml@0.17.0@d41d8cd9": {
-      "id": "@grain/binaryen.ml@0.17.0@d41d8cd9",
+    "@grain/binaryen.ml@link:../../binaryen.ml": {
+      "id": "@grain/binaryen.ml@link:../../binaryen.ml",
       "name": "@grain/binaryen.ml",
-      "version": "0.17.0",
-      "source": {
-        "type": "install",
-        "source": [
-          "archive:https://registry.npmjs.org/@grain/binaryen.ml/-/binaryen.ml-0.17.0.tgz#sha1:8cf522f8688fea465d423ce9279e8436a2a01f8f"
-        ]
-      },
+      "version": "link:../../binaryen.ml",
+      "source": { "type": "link", "path": "../../binaryen.ml" },
       "overrides": [],
       "dependencies": [
         "ocaml@4.12.0@d41d8cd9",
         "@opam/dune-configurator@opam:2.9.3@174e411b",
         "@opam/dune@opam:2.9.3@f57a6d69",
-        "@grain/libbinaryen@107.0.0@d41d8cd9"
+        "@grain/libbinaryen@107.0.1@d41d8cd9"
       ],
       "devDependencies": [],
       "installConfig": { "pnp": false }
