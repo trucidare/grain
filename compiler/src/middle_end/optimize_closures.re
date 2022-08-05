@@ -33,9 +33,9 @@ module ClosuresArg: Anf_mapper.MapArgument = {
                       ...value,
                       comp_desc:
                         CLambda(name, args, (body, body_ty), Unnecessary),
-                      // StackAllocated since we'll replace the closure
+                      // Unmanaged since we'll replace the closure
                       // allocation with 0 and we don't need it GC'd
-                      comp_allocation_type: StackAllocated(WasmI32),
+                      comp_allocation_type: Unmanaged(WasmI32),
                     },
                   );
                 } else {
@@ -52,7 +52,7 @@ module ClosuresArg: Anf_mapper.MapArgument = {
                             List.of_seq(Ident.Set.to_seq(free_var_set)),
                           ),
                         ),
-                      comp_allocation_type: StackAllocated(WasmI32),
+                      comp_allocation_type: Unmanaged(WasmI32),
                     },
                   );
                 };
