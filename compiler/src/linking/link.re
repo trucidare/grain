@@ -531,22 +531,27 @@ let link_all = (linked_mod, dependencies, signature) => {
     -1,
     Type.funcref,
   );
-  let (initial_memory, maximum_memory) =
-    switch (Config.initial_memory_pages^, Config.maximum_memory_pages^) {
-    | (initial_memory, Some(maximum_memory)) => (
-        initial_memory,
-        maximum_memory,
-      )
-    | (initial_memory, None) => (initial_memory, Memory.unlimited)
-    };
-  Memory.set_memory(
-    linked_mod,
-    initial_memory,
-    maximum_memory,
-    "memory",
-    [],
-    false,
-  );
+
+  if (Config.import_memory^) {
+    Import.add_memory_import(linked_mod, "memory", "env", "memory", false);
+  } else {
+    let (initial_memory, maximum_memory) =
+      switch (Config.initial_memory_pages^, Config.maximum_memory_pages^) {
+      | (initial_memory, Some(maximum_memory)) => (
+          initial_memory,
+          maximum_memory,
+        )
+      | (initial_memory, None) => (initial_memory, Memory.unlimited)
+      };
+    Memory.set_memory(
+      linked_mod,
+      initial_memory,
+      maximum_memory,
+      "memory",
+      [],
+      false,
+    );
+  };
 
   let starts =
     List.map(
