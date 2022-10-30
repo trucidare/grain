@@ -2910,6 +2910,14 @@ let do_backpatches = (wasm_mod, env, backpatches) => {
   );
 };
 
+let current_function = ref(None);
+let get_current_function = () => {
+  switch (current_function^) {
+  | Some(func) => func
+  | None => failwith("No current function set")
+  };
+};
+let set_current_function = func => current_function := Some(func);
 let loop_stack = ref([]: list((string, string)));
 
 let rec compile_store = (wasm_mod, env, binds) => {
@@ -3245,6 +3253,24 @@ and compile_instr = (wasm_mod, env, instr) =>
       Expression.Null.make(),
       Expression.Const.make(wasm_mod, const_void()),
     );
+  | MReturn(value) =>
+    let current_function = get_current_function();
+    let value =
+      Option.fold(
+        ~none=Expression.Const.make(wasm_mod, const_void()),
+        ~some=compile_instr(wasm_mod, env),
+        value,
+      );
+    Expression.Return.make(
+      wasm_mod,
+      cleanup_locals(
+        wasm_mod,
+        env,
+        value,
+        current_function.args,
+        current_function.return_type,
+      ),
+    );
   | MError(err, args) =>
     call_error_handler(
       wasm_mod,
@@ -3426,9 +3452,10 @@ let compile_function =
       ~preamble=?,
       wasm_mod,
       env,
-      {id, args, return_type, stack_size, body: body_instrs, func_loc},
+      {id, args, return_type, stack_size, body: body_instrs, func_loc} as func,
     ) => {
   sources := [];
+  set_current_function(func);
   let arity = List.length(args);
   let func_name =
     switch (name) {

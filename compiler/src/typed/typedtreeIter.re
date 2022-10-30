@@ -252,6 +252,7 @@ module MakeIterator =
       iter_expression(b);
     | TExpContinue
     | TExpBreak => ()
+    | TExpReturn(e) => Option.iter(iter_expression, e)
     };
     Iter.leave_expression(exp);
   };

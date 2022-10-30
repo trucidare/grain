@@ -122,6 +122,8 @@ module E = {
       )
     | PExpContinue => continue(~loc, ~attributes, ())
     | PExpBreak => break(~loc, ~attributes, ())
+    | PExpReturn(e) =>
+      return(~loc, ~attributes, Option.map(sub.expr(sub), e))
     | PExpLambda(pl, e) =>
       lambda(
         ~loc,

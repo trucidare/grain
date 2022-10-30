@@ -111,6 +111,9 @@ module MakeMap = (Iter: MapArgument) => {
         CFor(c, inc, body);
       | CContinue => CContinue
       | CBreak => CBreak
+      | CReturn(e) =>
+        let e = Option.map(map_comp_expression, e);
+        CReturn(e);
       | CSwitch(c, branches, partial) =>
         let c = map_imm_expression(c);
         let branches =
