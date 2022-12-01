@@ -97,17 +97,16 @@ export let wasmI32ToNumber = (n: WasmI32) => {
   // Untag it, just like numbers.untagSimple.
   let untagged = WasmI32.shrS(simple, 1n)
 
-  let result = if (WasmI32.eq(untagged, n)) {
+  if (WasmI32.eq(untagged, n)) {
     // Just test if the untagged number is the same. If it didn't overflow, then
     // we're good. We just need to cast the raw value into a Number at the type
     // system level.
-    WasmI32.toGrain(simple): Number
-  } else {
-    // If it did overflow, then the value differs and we need to discard it and
-    // allocate the number on the heap. A boxed 32 bit number actually is the
-    // same thing as an Int32. It only needs to be cast into Number.
-    let asInt32 = toInt32(n)
-    WasmI32.toGrain(WasmI32.fromGrain(asInt32)): Number
+    return WasmI32.toGrain(simple): Number
   }
-  result
+
+  // If it did overflow, then the value differs and we need to discard it and
+  // allocate the number on the heap. A boxed 32 bit number actually is the
+  // same thing as an Int32. It only needs to be cast into Number.
+  let asInt32 = toInt32(n)
+  return WasmI32.toGrain(WasmI32.fromGrain(asInt32)): Number
 }

@@ -59,20 +59,16 @@ let findTypeMetadata = (moduleId, typeId) => {
     metadataPtr = WasmI32.load(metadataPtr, 0n)
   }
 
-  if (modData == -1n) {
-    -1n
-  } else {
-    let mut typeData = -1n
-    for (let mut i = 0n; i < modTypesCount; i += 1n) {
-      if (WasmI32.load(modData, 4n) == typeId) {
-        typeData = modData
-        break
-      }
-      modData += WasmI32.load(modData, 0n)
+  if (modData == -1n) return { -1n }
+  
+  for (let mut i = 0n; i < modTypesCount; i += 1n) {
+    if (WasmI32.load(modData, 4n) == typeId) {
+      return modData
     }
-
-    typeData
+    modData += WasmI32.load(modData, 0n)
   }
+
+  return { -1n }
 }
 
 @unsafe
@@ -83,27 +79,24 @@ let getVariantName = variant => {
 
   let mut block = findTypeMetadata(moduleId, typeId)
 
-  if (block == -1n) {
-    -1n
-  } else {
-    let sectionLength = WasmI32.load(block, 0n)
-    block += 8n
+  if (block == -1n) return { -1n }
+  
+  let sectionLength = WasmI32.load(block, 0n)
+  block += 8n
 
-    let end = block + sectionLength
-    let mut result = -1n
-    while (block < end) {
-      if (WasmI32.load(block, 4n) == variantId) {
-        let length = WasmI32.load(block, 8n)
-        let str = allocateString(length)
-        Memory.copy(str + 8n, block + 12n, length)
-        result = str
-        break
-      }
-      block += WasmI32.load(block, 0n)
+  let end = block + sectionLength
+  let mut result = -1n
+  while (block < end) {
+    if (WasmI32.load(block, 4n) == variantId) {
+      let length = WasmI32.load(block, 8n)
+      let str = allocateString(length)
+      Memory.copy(str + 8n, block + 12n, length)
+      return str
     }
-
-    result
+    block += WasmI32.load(block, 0n)
   }
+
+  return { -1n }
 }
 
 @unsafe
@@ -114,26 +107,23 @@ let getRecordFieldNames = record_ => {
 
   let mut fields = findTypeMetadata(moduleId, typeId)
 
-  if (fields == -1n) {
-    -1n
-  } else {
-    fields += 8n
+  if (fields == -1n) return { -1n } 
+  fields += 8n
 
-    let fieldArray = allocateArray(arity)
+  let fieldArray = allocateArray(arity)
 
-    let mut fieldOffset = 0n
-    for (let mut i = 0n; i < arity; i += 1n) {
-      let fieldLength = WasmI32.load(fields + fieldOffset, 4n)
-      let fieldName = allocateString(fieldLength)
-      Memory.incRef(fieldName)
-      Memory.copy(fieldName + 8n, fields + fieldOffset + 8n, fieldLength)
-      WasmI32.store(fieldArray + i * 4n, fieldName, 8n)
+  let mut fieldOffset = 0n
+  for (let mut i = 0n; i < arity; i += 1n) {
+    let fieldLength = WasmI32.load(fields + fieldOffset, 4n)
+    let fieldName = allocateString(fieldLength)
+    Memory.incRef(fieldName)
+    Memory.copy(fieldName + 8n, fields + fieldOffset + 8n, fieldLength)
+    WasmI32.store(fieldArray + i * 4n, fieldName, 8n)
 
-      fieldOffset += WasmI32.load(fields + fieldOffset, 0n)
-    }
-
-    fieldArray
+    fieldOffset += WasmI32.load(fields + fieldOffset, 0n)
   }
+
+  return fieldArray
 }
 
 @unsafe
