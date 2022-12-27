@@ -201,6 +201,8 @@ module Exp: {
   let constraint_:
     (~loc: loc=?, ~attributes: attributes=?, expression, parsed_type) =>
     expression;
+  let use:
+    (~loc: loc=?, ~attributes: attributes=?, id, use_items) => expression;
   let box_assign:
     (~loc: loc=?, ~attributes: attributes=?, expression, expression) =>
     expression;
@@ -232,6 +234,14 @@ module Top: {
   let foreign:
     (~loc: loc=?, ~attributes: attributes=?, export_flag, value_description) =>
     toplevel_stmt;
+  let module_:
+    (
+      ~loc: loc=?,
+      ~attributes: attributes=?,
+      export_flag,
+      module_declaration
+    ) =>
+    toplevel_stmt;
   let primitive:
     (~loc: loc=?, ~attributes: attributes=?, export_flag, value_description) =>
     toplevel_stmt;
@@ -258,11 +268,7 @@ module Top: {
     (~loc: loc=?, ~attributes: attributes=?, export_flag, type_exception) =>
     toplevel_stmt;
   let export:
-    (~loc: loc=?, ~attributes: attributes=?, list(export_declaration)) =>
-    toplevel_stmt;
-  let export_all:
-    (~loc: loc=?, ~attributes: attributes=?, list(export_except)) =>
-    toplevel_stmt;
+    (~loc: loc=?, ~attributes: attributes=?, expose_items) => toplevel_stmt;
 };
 
 module Val: {
@@ -286,11 +292,8 @@ module Mb: {
     (~loc: loc=?, pattern, expression, option(expression)) => match_branch;
 };
 
-module Imp: {
-  let mk: (~loc: loc=?, list(import_value), str) => import_declaration;
-};
+module Imp: {let mk: (~loc: loc=?, str, id) => import_declaration;};
 
-module Ex: {
-  let mk:
-    (~loc: loc=?, list((str, option(str)))) => list(export_declaration);
+module Mod: {
+  let mk: (~loc: loc=?, str, list(toplevel_stmt)) => module_declaration;
 };

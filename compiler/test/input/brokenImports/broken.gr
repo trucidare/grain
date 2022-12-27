@@ -1,4 +1,4 @@
-import Number from "number"
-import Foo from "./foo"
+include "number" as Number
+include "./foo" as Foo
 
-export let min = Number.min
+expose let min = Number.min

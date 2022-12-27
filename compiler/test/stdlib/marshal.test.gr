@@ -1,6 +1,7 @@
-import * from "marshal"
-import Bytes from "bytes"
-import Result from "result"
+include "marshal" as Marshal
+from Marshal use *
+include "bytes" as Bytes
+include "result" as Result
 
 let roundtripOk = value => unmarshal(marshal(value)) == Ok(value)
 

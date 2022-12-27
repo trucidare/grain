@@ -1,6 +1,6 @@
-import PriorityQueue from "priorityqueue"
-import List from "list"
-import Array from "array"
+include "priorityqueue" as PriorityQueue
+include "list" as List
+include "array" as Array
 
 // formatter-ignore
 let lotsOfVals = [>

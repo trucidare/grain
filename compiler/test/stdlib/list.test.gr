@@ -1,5 +1,6 @@
-import * from "list"
-import String from "string"
+include "list" as List
+from List use *
+include "string" as String
 
 let list = [1, 2, 3]
 

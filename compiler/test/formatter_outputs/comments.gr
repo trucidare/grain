@@ -27,7 +27,7 @@ let myfun2 = (x /*post*/, y) => 10
  * @param array: The array to be sliced
  * @returns The subset of the array that was sliced
  */
-export let slice = (startIndex, endIndex, array) => {
+expose let slice = (startIndex, endIndex, array) => {
   "no code"
 }
 

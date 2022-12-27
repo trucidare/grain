@@ -1,1 +1,1 @@
-export let quux = (n) => n * n
+expose let quux = (n) => n * n

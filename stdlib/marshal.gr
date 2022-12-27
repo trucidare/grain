@@ -1,7 +1,7 @@
 /**
  * @module Marshal: Utilities for serializing and deserializing Grain data.
  *
- * @example import Marshal from "marshal"
+ * @example include "marshal" as Marshal
  *
  * @since v0.5.3
  */
@@ -24,7 +24,8 @@
  * @section Values: Functions for marshaling and unmarshaling data.
  */
 
-import WasmI32, {
+include "runtime/unsafe/wasmi32" as WasmI32
+from WasmI32 use {
   add as (+),
   mul as (*),
   and as (&),
@@ -37,14 +38,15 @@ import WasmI32, {
   store,
   fromGrain,
   toGrain,
-} from "runtime/unsafe/wasmi32"
-import WasmI64 from "runtime/unsafe/wasmi64"
-import Memory from "runtime/unsafe/memory"
-import Tags from "runtime/unsafe/tags"
-import { allocateBytes, newInt32 } from "runtime/dataStructures"
-import Map from "map"
-import Set from "set"
-import Option from "option"
+}
+include "runtime/unsafe/wasmi64" as WasmI64
+include "runtime/unsafe/memory" as Memory
+include "runtime/unsafe/tags" as Tags
+include "runtime/dataStructures" as DataStructures
+from DataStructures use { allocateBytes, newInt32 }
+include "map" as Map
+include "set" as Set
+include "option" as Option
 
 @unsafe
 let roundTo8 = n => {
@@ -422,7 +424,7 @@ let marshal = (value, buf) => {
  * @since v0.5.3
  */
 @unsafe
-export let marshal = value => {
+expose let marshal = value => {
   let valuePtr = fromGrain(value)
   let buf = allocateBytes(size(valuePtr))
   marshal(valuePtr, buf + 8n)
@@ -1048,7 +1050,7 @@ let unmarshal = buf => {
  * @since v0.5.3
  */
 @unsafe
-export let unmarshal = (bytes: Bytes) => {
+expose let unmarshal = (bytes: Bytes) => {
   let buf = fromGrain(bytes) + 8n
   let bufSize = load(fromGrain(bytes), 4n)
   match (validate(buf, bufSize)) {

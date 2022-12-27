@@ -1,4 +1,4 @@
-import Range from "range"
+include "range" as Range
 
 let inclusiveAscendingRange = Range.Inclusive(1, 5)
 let inclusiveDescendingRange = Range.Inclusive(5, 1)

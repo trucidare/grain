@@ -1,2 +1,3 @@
-import {quux} from "../quux/quux"
-export let baz = (n) => quux(n) + 1
+include "../quux/quux" as Quux
+from Quux use { quux }
+expose let baz = n => quux(n) + 1

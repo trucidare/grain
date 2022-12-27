@@ -1,4 +1,5 @@
-import * from "int32"
+include "int32" as Int32
+from Int32 use *
 
 assert fromNumber(5) == 5l
 assert fromNumber(0) == 0l

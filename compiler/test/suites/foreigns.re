@@ -10,10 +10,10 @@ describe("foreigns", ({test}) => {
       name,
       {|
       @externalName("env.foo")
-      import foreign wasm foo: Number -> Number from "env"
+      foreign wasm foo: Number -> Number from "env"
 
       @externalName("__foo%%!")
-      export let bar = () => foo(1)
+      expose let bar = () => foo(1)
       |},
     );
     let ic = open_in_bin(outfile);

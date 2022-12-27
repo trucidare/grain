@@ -1,10 +1,10 @@
 /* grainc-flags --no-pervasives */
 // Printing utilities for runtime code (primarily for debugging)
-import WasmI32 from "runtime/unsafe/wasmi32"
-import Memory from "runtime/unsafe/memory"
-import NumberUtils from "runtime/numberUtils"
+include "runtime/unsafe/wasmi32" as WasmI32
+include "runtime/unsafe/memory" as Memory
+include "runtime/numberUtils" as NumberUtils
 
-import foreign wasm fd_write: (
+foreign wasm fd_write: (
   WasmI32,
   WasmI32,
   WasmI32,
@@ -12,12 +12,12 @@ import foreign wasm fd_write: (
 ) -> WasmI32 from "wasi_snapshot_preview1"
 
 @unsafe
-export let numberToString = (n: WasmI64) => {
+expose let numberToString = (n: WasmI64) => {
   NumberUtils.itoa64(n, 10n)
 }
 
 @unsafe
-export let printNumber = (n: WasmI64) => {
+expose let printNumber = (n: WasmI64) => {
   // like print(), but `s` should be a Grain string
   let (+) = WasmI32.add
   let s = numberToString(n)
@@ -40,7 +40,7 @@ export let printNumber = (n: WasmI64) => {
 }
 
 @unsafe
-export let printString = (s: String) => {
+expose let printString = (s: String) => {
   // like print(), but `s` should be a Grain string
   let (+) = WasmI32.add
   let ptr = WasmI32.fromGrain(s)

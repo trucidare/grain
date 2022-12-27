@@ -1,4 +1,5 @@
-import * from "float32"
+include "float32" as Float32
+from Float32 use *
 
 // Constants Test
 // smoke test:

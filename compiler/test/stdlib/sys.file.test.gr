@@ -1,5 +1,5 @@
-import Fs from "sys/file"
-import Result from "result"
+include "sys/file" as Fs
+include "result" as Result
 
 // fdRead
 let foo = Result.unwrap(

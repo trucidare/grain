@@ -1,4 +1,5 @@
-import * from "float64"
+include "float64" as Float64
+from Float64 use *
 
 // Constants Tests
 // smoke test:

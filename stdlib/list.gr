@@ -1,7 +1,7 @@
 /**
  * @module List: Utilities for working with lists.
  *
- * @example import List from "list"
+ * @example include "list" as List
  *
  * @since v0.2.0
  * @history v0.1.0: Originally named `lists`
@@ -25,7 +25,7 @@
  *
  * @since v0.3.0
  */
-export let init = (length, fn) => {
+expose let init = (length, fn) => {
   // This method can be further improved by checking the length against a specific size
   // and determining if it can be made tail-recursive, then use List.reverse on it.
   // Which would be the same as OCaml does it in https://github.com/ocaml/ocaml/blob/03839754f46319aa36d9dad56940a6f3c3bcb48a/stdlib/list.ml#L79
@@ -48,7 +48,7 @@ export let init = (length, fn) => {
  * @since v0.1.0
  * @history v0.2.0: Made the function tail-recursive
  */
-export let length = list => {
+expose let length = list => {
   let rec iter = (len, list) => {
     match (list) {
       [] => len,
@@ -66,7 +66,7 @@ export let length = list => {
  *
  * @since v0.1.0
  */
-export let reverse = list => {
+expose let reverse = list => {
   let rec iter = (list, acc) => {
     match (list) {
       [] => acc,
@@ -86,7 +86,7 @@ export let reverse = list => {
  *
  * @since v0.1.0
  */
-export let rec append = (list1, list2) => {
+expose let rec append = (list1, list2) => {
   match (list1) {
     [] => list2,
     [first, ...rest] => [first, ...append(rest, list2)],
@@ -103,7 +103,7 @@ export let rec append = (list1, list2) => {
  *
  * @since v0.1.0
  */
-export let rec contains = (search, list) => {
+expose let rec contains = (search, list) => {
   match (list) {
     [] => false,
     [first, ...rest] => first == search || contains(search, rest),
@@ -130,7 +130,7 @@ export let rec contains = (search, list) => {
  * @history v0.1.0: Originally named `foldLeft`
  * @history v0.2.0: Renamed to `reduce`
  */
-export let rec reduce = (fn, initial, list) => {
+expose let rec reduce = (fn, initial, list) => {
   match (list) {
     [] => initial,
     [first, ...rest] => reduce(fn, fn(initial, first), rest),
@@ -157,7 +157,7 @@ export let rec reduce = (fn, initial, list) => {
  * @history v0.1.0: Originally named `foldRight`
  * @history v0.2.0: Renamed to `reduceRight`
  */
-export let rec reduceRight = (fn, initial, list) => {
+expose let rec reduceRight = (fn, initial, list) => {
   match (list) {
     [] => initial,
     [first, ...rest] => fn(first, reduceRight(fn, initial, rest)),
@@ -174,7 +174,7 @@ export let rec reduceRight = (fn, initial, list) => {
  *
  * @since v0.1.0
  */
-export let rec map = (fn, list) => {
+expose let rec map = (fn, list) => {
   match (list) {
     [] => [],
     [first, ...rest] => [fn(first), ...map(fn, rest)],
@@ -191,7 +191,7 @@ export let rec map = (fn, list) => {
  *
  * @since v0.1.0
  */
-export let mapi = (fn, list) => {
+expose let mapi = (fn, list) => {
   let rec iter = (fn, list, index) => {
     match (list) {
       [] => [],
@@ -213,7 +213,7 @@ export let mapi = (fn, list) => {
  *
  * @since v0.2.0
  */
-export let rec flatMap = (fn, list) => {
+expose let rec flatMap = (fn, list) => {
   match (list) {
     [] => [],
     [first, ...rest] => append(fn(first), flatMap(fn, rest)),
@@ -230,7 +230,7 @@ export let rec flatMap = (fn, list) => {
  *
  * @since v0.1.0
  */
-export let rec every = (fn, list) => {
+expose let rec every = (fn, list) => {
   match (list) {
     [] => true,
     // The short-circuiting of `&&` makes this tail-recursive
@@ -248,7 +248,7 @@ export let rec every = (fn, list) => {
  *
  * @since v0.1.0
  */
-export let rec some = (fn, list) => {
+expose let rec some = (fn, list) => {
   match (list) {
     [] => false,
     // The short-circuiting of `||` makes this tail-recursive
@@ -264,7 +264,7 @@ export let rec some = (fn, list) => {
  *
  * @since v0.1.0
  */
-export let rec forEach = (fn, list) => {
+expose let rec forEach = (fn, list) => {
   match (list) {
     [] => void,
     [first, ...rest] => {
@@ -283,7 +283,7 @@ export let rec forEach = (fn, list) => {
  *
  * @since v0.1.0
  */
-export let forEachi = (fn, list) => {
+expose let forEachi = (fn, list) => {
   let rec iter = (fn, list, index) => {
     match (list) {
       [] => void,
@@ -307,7 +307,7 @@ export let forEachi = (fn, list) => {
  *
  * @since v0.1.0
  */
-export let rec filter = (fn, list) => {
+expose let rec filter = (fn, list) => {
   match (list) {
     [] => [],
     [first, ...rest] =>
@@ -326,7 +326,7 @@ export let rec filter = (fn, list) => {
  *
  * @since v0.3.0
  */
-export let filteri = (fn, list) => {
+expose let filteri = (fn, list) => {
   let rec iter = (fn, list, index) => {
     match (list) {
       [] => [],
@@ -349,7 +349,7 @@ export let filteri = (fn, list) => {
  *
  * @since v0.1.0
  */
-export let rec reject = (fn, list) => {
+expose let rec reject = (fn, list) => {
   match (list) {
     [] => [],
     [first, ...rest] =>
@@ -369,7 +369,7 @@ export let rec reject = (fn, list) => {
  * @history v0.2.0: Renamed to `head`
  * @history v0.3.0: Return type converted to `Option` type
  */
-export let head = list => {
+expose let head = list => {
   match (list) {
     [] => None,
     [first, ..._] => Some(first),
@@ -388,7 +388,7 @@ export let head = list => {
  * @history v0.2.0: Renamed to `tail`
  * @history v0.3.0: Return type converted to `Option` type
  */
-export let tail = list => {
+expose let tail = list => {
   match (list) {
     [] => None,
     [_, ...rest] => Some(rest),
@@ -407,7 +407,7 @@ export let tail = list => {
  * @history v0.1.0: Originally failed for index out-of-bounds or list empty
  * @history v0.3.0: Return type converted to `Option` type
  */
-export let rec nth = (index, list) => {
+expose let rec nth = (index, list) => {
   if (index < 0) {
     None
   } else {
@@ -428,7 +428,7 @@ export let rec nth = (index, list) => {
  *
  * @since v0.1.0
  */
-export let rec flatten = list => {
+expose let rec flatten = list => {
   match (list) {
     [] => [],
     [first, ...rest] => append(first, flatten(rest)),
@@ -448,7 +448,7 @@ export let rec flatten = list => {
  *
  * @since v0.1.0
  */
-export let rec insert = (value, index, list) => {
+expose let rec insert = (value, index, list) => {
   if (index < 0) {
     fail "insert index cannot be a negative number"
   } else {
@@ -471,7 +471,7 @@ export let rec insert = (value, index, list) => {
  * @since v0.1.0
  * @history v0.2.0: Made the function tail-recursive
  */
-export let count = (fn, list) => {
+expose let count = (fn, list) => {
   let rec iter = (n, list) => {
     match (list) {
       [] => n,
@@ -493,7 +493,7 @@ export let count = (fn, list) => {
  *
  * @since v0.1.0
  */
-export let part = (count, list) => {
+expose let part = (count, list) => {
   if (count < 0) {
     fail "part count cannot be a negative number"
   } else {
@@ -527,7 +527,7 @@ export let part = (count, list) => {
  *
  * @since v0.1.0
  */
-export let rotate = (count, list) => {
+expose let rotate = (count, list) => {
   let (beginning, end) =
     if (count >= 0) part(count, list) else part(length(list) + count, list)
   append(end, beginning)
@@ -544,7 +544,7 @@ export let rotate = (count, list) => {
  * @history v0.1.0: Originally named `uniq`
  * @history v0.2.0: Renamed to `unique`
  */
-export let unique = list => {
+expose let unique = list => {
   let rec iter = (list, acc) => {
     match (list) {
       [] => reverse(acc),
@@ -573,7 +573,7 @@ export let unique = list => {
  *
  * @since v0.5.3
  */
-export let zip = (list1, list2) => {
+expose let zip = (list1, list2) => {
   let rec zipInner = (list1, list2, acc) => {
     match ((list1, list2)) {
       ([first1, ...rest1], [first2, ...rest2]) =>
@@ -604,7 +604,7 @@ export let zip = (list1, list2) => {
  *
  * @since v0.5.3
  */
-export let zipWith = (fn, list1, list2) => {
+expose let zipWith = (fn, list1, list2) => {
   let rec zipWithInner = (list1, list2, acc) => {
     match ((list1, list2)) {
       ([first1, ...rest1], [first2, ...rest2]) =>
@@ -623,7 +623,7 @@ export let zipWith = (fn, list1, list2) => {
  *
  * @since v0.5.3
  */
-export let unzip = list => {
+expose let unzip = list => {
   reduceRight(((first, second), (firstUnzipped, secondUnzipped)) => {
     ([first, ...firstUnzipped], [second, ...secondUnzipped])
   }, ([], []), list)
@@ -641,7 +641,7 @@ export let unzip = list => {
  *
  * @since v0.2.0
  */
-export let rec drop = (count, list) => {
+expose let rec drop = (count, list) => {
   if (count < 0) {
     fail "number of items to drop cannot be a negative number"
   } else {
@@ -664,7 +664,7 @@ export let rec drop = (count, list) => {
  *
  * @since v0.2.0
  */
-export let rec dropWhile = (fn, list) => {
+expose let rec dropWhile = (fn, list) => {
   match (list) {
     [] => list,
     [first, ...rest] => if (fn(first)) dropWhile(fn, rest) else list,
@@ -683,7 +683,7 @@ export let rec dropWhile = (fn, list) => {
  *
  * @since v0.2.0
  */
-export let rec take = (count, list) => {
+expose let rec take = (count, list) => {
   if (count < 0) {
     fail "number of items to take cannot be a negative number"
   } else {
@@ -706,7 +706,7 @@ export let rec take = (count, list) => {
  *
  * @since v0.2.0
  */
-export let rec takeWhile = (fn, list) => {
+expose let rec takeWhile = (fn, list) => {
   match (list) {
     [] => [],
     [first, ...rest] => if (fn(first)) [first, ...takeWhile(fn, rest)] else [],
@@ -724,7 +724,7 @@ export let rec takeWhile = (fn, list) => {
  * @history v0.2.0: Originally failed if the list was empty
  * @history v0.3.0: Return type converted to `Option` type
  */
-export let rec find = (fn, list) => {
+expose let rec find = (fn, list) => {
   match (list) {
     [] => None,
     [first, ...rest] => if (fn(first)) Some(first) else find(fn, rest),
@@ -742,7 +742,7 @@ export let rec find = (fn, list) => {
  * @history v0.2.0: Originally failed if the list was empty
  * @history v0.3.0: Return type converted to `Option` type
  */
-export let findIndex = (fn, list) => {
+expose let findIndex = (fn, list) => {
   let rec findItemIndex = (l, index) => {
     match (l) {
       [] => None,
@@ -763,7 +763,7 @@ export let findIndex = (fn, list) => {
  *
  * @since v0.2.0
  */
-export let product = (list1, list2) => {
+expose let product = (list1, list2) => {
   let mut list = []
   forEach(aItem => {
     forEach(bItem => {
@@ -787,7 +787,7 @@ export let product = (list1, list2) => {
  *
  * @since v0.2.0
  */
-export let sub = (start, length, list) => {
+expose let sub = (start, length, list) => {
   take(length, drop(start, list))
 }
 
@@ -801,7 +801,7 @@ export let sub = (start, length, list) => {
  *
  * @since v0.4.0
  */
-export let join = (separator: String, list: List<String>) => {
+expose let join = (separator: String, list: List<String>) => {
   let rec iter = (sep, acc, rem) => {
     match (rem) {
       [] => acc,
@@ -831,7 +831,7 @@ export let join = (separator: String, list: List<String>) => {
  *
  * @since v0.4.5
  */
-export let rec revAppend = (list1, list2) => {
+expose let rec revAppend = (list1, list2) => {
   match (list1) {
     [hd, ...tl] => revAppend(tl, [hd, ...list2]),
     [] => list2,
@@ -848,7 +848,7 @@ export let rec revAppend = (list1, list2) => {
  *
  * @since v0.4.5
  */
-export let sort = (comp, list) => {
+expose let sort = (comp, list) => {
   let rec merge = (left, right, list) => {
     match ((left, right)) {
       (_, []) => {

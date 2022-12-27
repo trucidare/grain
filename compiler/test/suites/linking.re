@@ -20,7 +20,7 @@ describe("linking", ({test, testSkip}) => {
   );
   assertRun(
     "link_import",
-    {|import List from "list"; print(List.map(n => n + 1, [1, 2, 3]))|},
+    {|include "list" as List; print(List.map(n => n + 1, [1, 2, 3]))|},
     "[2, 3, 4]\n",
   );
   assertRun("link_issue_994_no_generated_code", {|0|}, "");
@@ -31,7 +31,7 @@ describe("linking", ({test, testSkip}) => {
   );
   assertRun(
     "link_issue_994_exported_type",
-    {|export record Foo { foo: String }|},
+    {|expose record Foo { foo: String }|},
     "",
   );
   // --wasi-polyfill

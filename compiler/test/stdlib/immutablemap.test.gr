@@ -1,6 +1,6 @@
-import ImmutableMap from "immutablemap"
-import List from "list"
-import Array from "array"
+include "immutablemap" as ImmutableMap
+include "list" as List
+include "array" as Array
 
 // Data types used in multiple tests
 enum Resource {

@@ -1,5 +1,5 @@
-import Array from "array"
-import String from "string"
+include "array" as Array
+include "string" as String
 
 let arr = [> 1, 2, 3]
 

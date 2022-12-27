@@ -166,7 +166,7 @@ describe("basic functionality", ({test, testSkip}) => {
   );
   assertCompileError(
     "exports_weak_types",
-    {|export let f = box(x => 0)|},
+    {|expose let f = box(x => 0)|},
     "type variables that cannot be generalized",
   );
   assertSnapshot("int32_1", "42l");

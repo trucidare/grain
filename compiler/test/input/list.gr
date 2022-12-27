@@ -1,3 +1,4 @@
-import * from "list"
+include "list" as List
+from List use *
 
 print("OK")

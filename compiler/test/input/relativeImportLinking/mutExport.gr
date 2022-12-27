@@ -1,1 +1,1 @@
-export let x = box(0)
+expose let x = box(0)

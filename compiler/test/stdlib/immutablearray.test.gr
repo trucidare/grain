@@ -1,7 +1,7 @@
-import ImmutableArray from "immutablearray"
-import List from "list"
-import String from "string"
-import Range from "range"
+include "immutablearray" as ImmutableArray
+include "list" as List
+include "string" as String
+include "range" as Range
 
 let fromList = ImmutableArray.fromList
 let arr = fromList([1, 2, 3])

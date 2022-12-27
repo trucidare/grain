@@ -206,32 +206,32 @@ bar",))|},
   );
   assertRun(
     "string_float1",
-    {|import * from "float32"; print(div(0.0f, 0.0f))|},
+    {|include "float32" as Float32; from Float32 use *; print(div(0.0f, 0.0f))|},
     "NaN\n",
   );
   assertRun(
     "string_float2",
-    {|import * from "float32"; print(div(1.0f, 0.0f))|},
+    {|include "float32" as Float32; from Float32 use *; print(div(1.0f, 0.0f))|},
     "Infinity\n",
   );
   assertRun(
     "string_float3",
-    {|import * from "float32"; print(div(-1.0f, 0.0f))|},
+    {|include "float32" as Float32; from Float32 use *; print(div(-1.0f, 0.0f))|},
     "-Infinity\n",
   );
   assertRun(
     "string_float4",
-    {|import * from "float64"; print(div(0.0d, 0.0d))|},
+    {|include "float64" as Float64; from Float64 use *; print(div(0.0d, 0.0d))|},
     "NaN\n",
   );
   assertRun(
     "string_float5",
-    {|import * from "float64"; print(div(1.0d, 0.0d))|},
+    {|include "float64" as Float64; from Float64 use *; print(div(1.0d, 0.0d))|},
     "Infinity\n",
   );
   assertRun(
     "string_float6",
-    {|import * from "float64"; print(div(-1.0d, 0.0d))|},
+    {|include "float64" as Float64; from Float64 use *; print(div(-1.0d, 0.0d))|},
     "-Infinity\n",
   );
 });

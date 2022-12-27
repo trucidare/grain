@@ -1,4 +1,4 @@
-import Queue from "queue"
+include "queue" as Queue
 
 let empty = Queue.make()
 // 1 <- 2 <- 3

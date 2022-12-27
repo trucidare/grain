@@ -1,4 +1,4 @@
-import Set from "set"
+include "set" as Set
 
 record Rec {
   foo: Number,

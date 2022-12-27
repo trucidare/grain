@@ -1,4 +1,5 @@
-import * from "int64"
+include "int64" as Int64
+from Int64 use *
 
 assert fromNumber(5) == 5L
 assert fromNumber(0) == 0L

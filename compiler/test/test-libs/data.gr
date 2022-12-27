@@ -1,1 +1,1 @@
-export record Foo<a> { bar: a }
+expose record Foo<a> { bar: a }

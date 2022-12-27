@@ -66,9 +66,12 @@ let add_code_point = (buf, str, loc) => {
 
 let comments = ref([]);
 
+let reset = () => {
+  comments := [];
+};
+
 let consume_comments = () => {
   let out_comments = comments^;
-  comments := [];
   List.rev(out_comments);
 };
 
@@ -226,8 +229,9 @@ let rec token = lexbuf => {
   | "true" => positioned(TRUE)
   | "false" => positioned(FALSE)
   | "void" => positioned(VOID)
-  | "import" => positioned(IMPORT)
-  | "export" => positioned(EXPORT)
+  | "include" => positioned(INCLUDE)
+  | "use" => positioned(USE)
+  | "expose" => positioned(EXPOSE)
   | "except" => positioned(EXCEPT)
   | "from" => positioned(FROM)
   | "*" => positioned(STAR)
@@ -239,6 +243,7 @@ let rec token = lexbuf => {
   | "type" => positioned(TYPE)
   | "enum" => positioned(ENUM)
   | "record" => positioned(RECORD)
+  | "module" => positioned(MODULE)
   | "let" => positioned(LET)
   | "mut" => positioned(MUT)
   | "rec" => positioned(REC)

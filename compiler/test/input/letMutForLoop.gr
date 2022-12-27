@@ -1,5 +1,5 @@
-import WasmI64 from "runtime/unsafe/wasmi64"
-import DebugPrint from "runtime/debugPrint"
+include "runtime/unsafe/wasmi64" as WasmI64
+include "runtime/debugPrint" as DebugPrint
 
 @unsafe
 let foo = () => {

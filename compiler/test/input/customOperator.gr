@@ -1,4 +1,4 @@
-import Result from "result"
+include "result" as Result
 
 let (>>=) = (a, b) => Result.flatMap(b, a)
 

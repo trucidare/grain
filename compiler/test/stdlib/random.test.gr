@@ -1,4 +1,4 @@
-import Random from "random"
+include "random" as Random
 
 let rng1 = Random.make(0xf00L)
 let rng2 = Random.make(0xf00L)

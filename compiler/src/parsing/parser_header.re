@@ -67,10 +67,6 @@ let fix_blocks = ({statements} as prog) => {
   {...prog, statements: List.map(mapper.toplevel(mapper), statements)};
 };
 
-let is_uppercase_ident = name => {
-  Char_utils.is_uppercase_letter(name.[0]);
-};
-
 let mkid = ns => {
   let help = ns => {
     let rec help = (ns, (acc_ident, acc_str)) => {

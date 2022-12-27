@@ -1,4 +1,4 @@
-import Random from "sys/random"
+include "sys/random" as Random
 
 // Just smoke tests, there's a miniscule chance these could fail
 

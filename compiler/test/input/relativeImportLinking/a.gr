@@ -1,5 +1,5 @@
-import MutExport from "./mutExport"
+include "./mutExport" as MutExport
 
 MutExport.x := unbox(MutExport.x) + 1
 
-export let readX = () => unbox(MutExport.x)
+expose let readX = () => unbox(MutExport.x)

@@ -1,5 +1,5 @@
-import WasmI64 from "runtime/unsafe/wasmi64"
-import Conv from "runtime/unsafe/conv"
+include "runtime/unsafe/wasmi64" as WasmI64
+include "runtime/unsafe/conv" as Conv
 
 @unsafe
 let test = () => {

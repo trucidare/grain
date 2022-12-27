@@ -1,5 +1,6 @@
-import { lt as (<) } from "int64"
-import Time from "sys/time"
+include "int64" as Int64
+from Int64 use { lt as (<) }
+include "sys/time" as Time
 
 let mt1 = Time.monotonicTime()
 let mt2 = Time.monotonicTime()

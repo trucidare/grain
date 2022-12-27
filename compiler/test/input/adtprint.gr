@@ -1,4 +1,4 @@
-export enum Printable {
+expose enum Printable {
   Foo,
   Bar,
   Baz(String),

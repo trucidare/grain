@@ -1,2 +1,3 @@
-import * from "../test-libs/exportStar";
+include "../test-libs/exposeStar" as ExposeStar
+from ExposeStar use *
 x

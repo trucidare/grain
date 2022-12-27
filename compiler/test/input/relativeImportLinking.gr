@@ -1,5 +1,5 @@
-import A from "./relativeImportLinking/a"
-import MutExport from "./relativeImportLinking/mutExport"
+include "./relativeImportLinking/a" as A
+include "./relativeImportLinking/mutExport" as MutExport
 
 MutExport.x := unbox(MutExport.x) + 1
 

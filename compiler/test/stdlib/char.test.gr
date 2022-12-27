@@ -1,6 +1,6 @@
-import Char from "char"
-import String from "string"
-import Array from "array"
+include "char" as Char
+include "string" as String
+include "array" as Array
 
 // isValid
 

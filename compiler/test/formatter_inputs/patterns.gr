@@ -1,5 +1,5 @@
-import Option from "option"
-import List from "list"
+include "option" as Option
+include "list" as List
 
 let user = Some("Bob")
 

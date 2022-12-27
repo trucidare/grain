@@ -1,7 +1,7 @@
-import String from "string"
-import Char from "char"
-import Array from "array"
-import Bytes from "bytes"
+include "string" as String
+include "char" as Char
+include "array" as Array
+include "bytes" as Bytes
 
 let fox = "The quick brown fox jumps over the lazy dog."
 let emojis = "we found a path🚀 to greatness🏅but the grind never quits😤💪🏼 keep milling💯🔥😈"

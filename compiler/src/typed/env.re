@@ -76,6 +76,8 @@ type error =
   | Unbound_label(Location.t, string)
   | No_module_file(string, option(string))
   | Value_not_found_in_module(Location.t, string, string)
+  | Module_not_found_in_module(Location.t, string, string, option(string))
+  | Type_not_found_in_module(Location.t, string, string)
   | Illegal_value_name(Location.t, string)
   | Cyclic_dependencies(string, dependency_chain);
 
@@ -937,6 +939,8 @@ let check_pers_struct = (~loc, name, filename) =>
       | Missing_module(_) => assert(false)
       | No_module_file(_) => assert(false)
       | Value_not_found_in_module(_) => assert(false)
+      | Module_not_found_in_module(_) => assert(false)
+      | Type_not_found_in_module(_) => assert(false)
       | Illegal_value_name(_) => assert(false)
       | Cyclic_dependencies(_) => assert(false)
       };
@@ -1010,7 +1014,7 @@ let find_type = (p, env) => fst(find_type_full(p, env));
 
 let find_type_descrs = (p, env) => snd(find_type_full(p, env));
 
-let find_module = (~alias, path, filename, env) =>
+let find_module = (path, filename, env) =>
   switch (path) {
   | PIdent(id) =>
     try({
@@ -1033,6 +1037,27 @@ let find_module = (~alias, path, filename, env) =>
     EnvLazy.force(subst_modtype_maker, data);
   };
 
+let find_module_chain = (path, env) => {
+  let rec find = (path, env) => {
+    switch (path) {
+    | PIdent(id) =>
+      let data = IdTbl.find_same(id, env.modules);
+      (
+        [EnvLazy.force(subst_modtype_maker, data)],
+        IdTbl.find_same(id, env.components),
+      );
+    | PExternal(m, s, pos) =>
+      let (data, components) = find(m, env);
+      let c = get_components(components);
+      let (decl, _pos) = Tbl.find(s, c.comp_modules);
+      let (components, _pos) = Tbl.find(s, c.comp_components);
+      ([EnvLazy.force(subst_modtype_maker, decl), ...data], components);
+    };
+  };
+  let (data, _) = find(path, env);
+  data;
+};
+
 let rec normalize_path = (lax, env, path) =>
   switch (path) {
   | PIdent(id) when lax && Ident.persistent(id) => path
@@ -1047,7 +1072,7 @@ let rec normalize_path = (lax, env, path) =>
   }
 and expand_path = (lax, env, path) =>
   try(
-    switch (find_module(~alias=true, path, None, env)) {
+    switch (find_module(path, None, env)) {
     | {md_type: TModAlias(path1)} => normalize_path(lax, env, path1)
     | _ => path
     }
@@ -1081,8 +1106,6 @@ let normalize_path_prefix = (oloc, env, path) =>
   | PIdent(_) => path
   };
 /*| PApply _ -> assert false*/
-
-let find_module = find_module(~alias=false);
 
 /* Find the manifest type associated to a type when appropriate:
    - the type should be public */
@@ -1147,14 +1170,13 @@ let mark_extension_used = (env, ext, loc) => ();
 let rec lookup_module_descr_aux = (~mark, id, env) =>
   Identifier.(
     switch (id) {
-    | IdentName({txt: s}) =>
-      let id = Ident.create_persistent(s);
-      (PIdent(id), IdTbl.find_same(id, env.components));
+    | IdentName({txt: s}) => IdTbl.find_name(~mark, s, env.components)
     | IdentExternal(m, {txt: n}) =>
       let (p, descr) = lookup_module_descr(~mark, m, env);
+      let (descr, pos) = Tbl.find(n, get_components(descr).comp_components);
       /* let (_, pos) = Tbl.find n (get_components descr).comp_components in */
-      // TODO(#1509): Should this have a proper position?
-      (PExternal(p, n, Path.nopos), descr);
+      // // TODO(#1509): Should this have a proper position?
+      (PExternal(p, n, pos), descr);
     }
   )
 
@@ -1215,14 +1237,14 @@ let lookup_idtbl = (~mark, proj1, proj2, id, env) =>
     switch (id) {
     | IdentName({txt: s}) => IdTbl.find_name(~mark, s, proj1(env))
     | IdentExternal(m, {txt: n}) =>
-      let (p, desc) = lookup_module_descr(~mark, id, env);
+      let (p, desc) = lookup_module_descr(~mark, m, env);
       let (data, pos) = Tbl.find(n, proj2(get_components(desc)));
-      let new_path =
-        switch (p) {
-        | PExternal(path, name, _) => PExternal(path, name, pos)
-        | _ => assert(false)
-        };
-      (new_path, data);
+      // let new_path =
+      //   switch (p) {
+      //   | PExternal(path, name, _) => PExternal(path, name, pos)
+      //   | PIdent(_) => p
+      //   };
+      (PExternal(p, n, pos), data);
     }
   );
 
@@ -1231,7 +1253,7 @@ let lookup_tycomptbl = (~mark, proj1, proj2, id, env) =>
     switch (id) {
     | IdentName({txt: s}) => TycompTbl.find_all(s, proj1(env))
     | IdentExternal(m, {txt: n}) =>
-      let (p, desc) = lookup_module_descr(~mark, id, env);
+      let (p, desc) = lookup_module_descr(~mark, m, env);
       let comps =
         try(Tbl.find(n, proj2(get_components(desc)))) {
         | Not_found => []
@@ -1785,7 +1807,7 @@ and store_type = (~check, id, info, env) => {
           | args =>
             ReprFunction(List.map(_ => WasmI32, args), [WasmI32], Unknown)
           };
-        let path = PIdent(Ident.create(desc.cstr_name));
+        let path = PIdent(id);
         let val_desc = {
           val_type,
           val_repr,
@@ -1864,7 +1886,8 @@ and store_type_infos = (id, info, env) =>
   }
 
 and store_extension = (~check, id, ext, env) => {
-  let cstr = Datarepr.extension_descr(PIdent(id), ext);
+  let path = PIdent(id);
+  let cstr = Datarepr.extension_descr(path, ext);
   let val_desc = {
     let val_type =
       switch (cstr.cstr_args) {
@@ -1886,7 +1909,6 @@ and store_extension = (~check, id, ext, env) => {
           Direct(Ident.unique_name(id)),
         )
       };
-    let path = PIdent(Ident.create(cstr.cstr_name));
     {
       val_type,
       val_repr,
@@ -1956,8 +1978,7 @@ and add_extension = (~check, id, ext, env) =>
   store_extension(~check, id, ext, env);
 
 let add_module_declaration = (~arg=false, ~check, id, md, env) => {
-  let env = store_module(~check, id, md, env);
-  env;
+  store_module(~check, id, md, env);
 }
 
 and add_modtype = (id, info, env) => store_modtype(id, info, env);
@@ -2029,105 +2050,33 @@ let rec add_signature = (sg, env) =>
 
 /* Open a signature path */
 
-let add_components =
-    (~filter_modules=?, ~filter_components=?, slot, root, env0, comps) => {
+let add_components = (slot, root, env0, comps) => {
   let add_l = (w, comps, env0) => TycompTbl.add_open(slot, w, comps, env0);
 
   let add = (w, comps, env0) => IdTbl.add_open(slot, w, root, comps, env0);
 
-  let skipped_modules = ref(StringSet.empty);
-  let filter = (tbl, env0_tbl) =>
-    switch (filter_modules) {
-    | None => tbl
-    | Some(f) =>
-      Tbl.fold(
-        (m, x, acc) =>
-          if (f(m)) {
-            Tbl.add(m, x, acc);
-          } else {
-            assert(
-              switch (IdTbl.find_name(m, env0_tbl, ~mark=false)) {
-              | _ => false
-              | exception _ => true
-              },
-            );
-            skipped_modules := StringSet.add(m, skipped_modules^);
-            acc;
-          },
-        tbl,
-        Tbl.empty,
-      )
-    };
-
-  let filter_and_add = (w, comps, env0) => {
-    let comps = filter(comps, env0);
-    add(w, comps, env0);
-  };
-
-  let filtered_components =
-    switch (filter_components) {
-    | Some(f) =>
-      let filter = tbl => {
-        let new_tbl = ref(Tbl.empty);
-        Tbl.iter(
-          (name, value) =>
-            switch (f(name)) {
-            | Some(new_name) => new_tbl := Tbl.add(new_name, value, new_tbl^)
-            | None => ()
-            },
-          tbl,
-        );
-        new_tbl^;
-      };
-
-      {
-        ...comps,
-        comp_constrs: filter(comps.comp_constrs),
-        comp_values: filter(comps.comp_values),
-        comp_types: filter(comps.comp_types),
-        comp_modtypes: filter(comps.comp_modtypes),
-        comp_components: filter(comps.comp_components),
-      };
-    | None => comps
-    };
-
   let constructors =
-    add_l(
-      x => `Constructor(x),
-      filtered_components.comp_constrs,
-      env0.constructors,
-    );
+    add_l(x => `Constructor(x), comps.comp_constrs, env0.constructors);
 
-  let values =
-    add(x => `Value(x), filtered_components.comp_values, env0.values);
+  let labels = add_l(x => `Label(x), comps.comp_labels, env0.labels);
 
-  let types = add(x => `Type(x), filtered_components.comp_types, env0.types);
+  let values = add(x => `Value(x), comps.comp_values, env0.values);
+
+  let types = add(x => `Type(x), comps.comp_types, env0.types);
 
   let modtypes =
-    add(
-      x => `Module_type(x),
-      filtered_components.comp_modtypes,
-      env0.modtypes,
-    );
+    add(x => `Module_type(x), comps.comp_modtypes, env0.modtypes);
 
   let components =
-    filter_and_add(
-      x => `Component(x),
-      filtered_components.comp_components,
-      env0.components,
-    );
+    add(x => `Component(x), comps.comp_components, env0.components);
 
-  let modules =
-    filter_and_add(
-      x => `Module(x),
-      filtered_components.comp_modules,
-      env0.modules,
-    );
+  let modules = add(x => `Module(x), comps.comp_modules, env0.modules);
 
   {
     ...env0,
     summary: Env_open(env0.summary, root),
     constructors,
+    labels,
     values,
     types,
     modtypes,
@@ -2160,12 +2109,12 @@ let check_opened = (mod_: Parsetree.import_declaration, env) => {
   find_open(env.summary);
 };
 
-let add_module_signature =
-    (mod_name, mod_: Parsetree.import_declaration, env0) => {
+let include_module = (mod_name, mod_: Parsetree.import_declaration, env0) => {
   let name =
     switch (mod_name) {
     | Identifier.IdentName(name) => name
-    | Identifier.IdentExternal(_) => failwith("NYI mod identifer is external")
+    | Identifier.IdentExternal(_) =>
+      failwith("Impossible: external mod identifer")
     };
 
   let mod_ident = Ident.create_persistent(name.txt);
@@ -2192,169 +2141,125 @@ let add_module_signature =
   };
 };
 
-let open_signature =
-    (~filter_modules=?, ~filter_components=?, slot, root, filepath, env0) => {
-  let comps = get_components(find_module_descr(root, filepath, env0));
-  Some(
-    add_components(
-      ~filter_modules?,
-      ~filter_components?,
-      slot,
-      root,
-      env0,
-      comps,
-    ),
-  );
-};
+let use_partial_signature = (root, items, env0) => {
+  let comps = get_components(find_module_descr(root, None, env0));
 
-let open_pers_signature = (name, filepath, env) =>
-  switch (
-    open_signature(
-      None,
-      PIdent(Ident.create_persistent(name)),
-      filepath,
-      env,
-    )
-  ) {
-  | Some(env) => env
-  | None => assert(false)
-  }; /* Invalid compilation unit */
+  let new_comps = {
+    comp_values: Tbl.empty,
+    comp_constrs: Tbl.empty,
+    comp_labels: Tbl.empty,
+    comp_types: Tbl.empty,
+    comp_components: Tbl.empty,
+    comp_modules: Tbl.empty,
+    comp_modtypes: Tbl.empty,
+  };
 
-let open_signature_of_initially_opened_module =
-    (~loc=Location.dummy_loc, root, env) => {
-  let filter_modules = m =>
-    // disabling relative paths should be overkill, but is technically the correct
-    // behavior for initially opened modules
-    switch (
-      Module_resolution.locate_module_file(~loc, ~disable_relpath=true, m)
-    ) {
-    | _ => false
-    | exception Not_found => true
-    };
-
-  open_signature(None, root, env, ~filter_modules);
-};
-
-let check_imports = (found, all, where) =>
   List.iter(
-    comp =>
-      if (List.mem(comp, found)) {
-        ();
-      } else {
-        let {loc, txt} = comp;
-        error(
-          Value_not_found_in_module(
-            loc,
-            Identifier.string_of_ident(txt),
-            where,
-          ),
-        );
-      },
-    all,
+    item => {
+      switch (item) {
+      | Parsetree.PUseValue({name, alias}) =>
+        let name_str = Identifier.string_of_ident(name.txt);
+        switch (Tbl.find(name_str, comps.comp_values)) {
+        | exception Not_found =>
+          error(
+            Value_not_found_in_module(name.loc, name_str, Path.name(root)),
+          )
+        | descr =>
+          let new_name =
+            switch (alias) {
+            | Some(alias) => Identifier.string_of_ident(alias.txt)
+            | None => name_str
+            };
+          new_comps.comp_values =
+            Tbl.add(new_name, descr, new_comps.comp_values);
+        };
+      | PUseModule({name, alias}) =>
+        let name_str = Identifier.string_of_ident(name.txt);
+        switch (Tbl.find(name_str, comps.comp_modules)) {
+        | exception Not_found =>
+          let possible_type =
+            if (Tbl.mem(name_str, comps.comp_types)) {
+              Some(name_str);
+            } else {
+              None;
+            };
+          error(
+            Module_not_found_in_module(
+              name.loc,
+              name_str,
+              Path.name(root),
+              possible_type,
+            ),
+          );
+        | descr =>
+          let new_name =
+            switch (alias) {
+            | Some(alias) => Identifier.string_of_ident(alias.txt)
+            | None => name_str
+            };
+          new_comps.comp_modules =
+            Tbl.add(new_name, descr, new_comps.comp_modules);
+          new_comps.comp_components =
+            Tbl.add(
+              new_name,
+              Tbl.find(name_str, comps.comp_components),
+              new_comps.comp_components,
+            );
+        };
+      | PUseType({name, alias}) =>
+        let name_str = Identifier.string_of_ident(name.txt);
+        switch (Tbl.find(name_str, comps.comp_types)) {
+        | exception Not_found =>
+          error(
+            Type_not_found_in_module(name.loc, name_str, Path.name(root)),
+          )
+        | ((_, (constructors, labels)), _) as descr =>
+          let new_name =
+            switch (alias) {
+            | Some(alias) => Identifier.string_of_ident(alias.txt)
+            | None => name_str
+            };
+          new_comps.comp_types =
+            Tbl.add(new_name, descr, new_comps.comp_types);
+          List.iter(
+            ({cstr_name}) => {
+              new_comps.comp_constrs =
+                Tbl.add(
+                  cstr_name,
+                  Tbl.find(cstr_name, comps.comp_constrs),
+                  new_comps.comp_constrs,
+                )
+            },
+            constructors,
+          );
+          List.iter(
+            ({lbl_name}) => {
+              new_comps.comp_labels =
+                Tbl.add(
+                  lbl_name,
+                  Tbl.find(lbl_name, comps.comp_labels),
+                  new_comps.comp_labels,
+                )
+            },
+            labels,
+          );
+        };
+      }
+    },
+    items,
   );
 
-let open_signature =
-    (
-      ~used_slot=ref(false),
-      ~toplevel=false,
-      root,
-      mod_name,
-      mod_: Parsetree.import_declaration,
-      env,
-    ) => {
-  let env = add_module_signature(mod_name, mod_, env);
-  let env =
-    List.fold_left(
-      (env, shape) =>
-        switch ((shape: Parsetree.import_value)) {
-        | PImportModule(_) => env
-        | PImportValues(values) =>
-          let imported = ref([]);
-          let filter_components = name => {
-            let value =
-              List.find_opt(
-                ((val_name, _)) =>
-                  switch ((val_name: Parsetree.loc(Identifier.t)).txt) {
-                  | Identifier.IdentName({txt: id_name}) => id_name == name
-                  | Identifier.IdentExternal(_) => failwith("NYI")
-                  },
-                values,
-              );
-            switch (value) {
-            | Some((val_name, val_alias)) =>
-              let new_name = Option.value(~default=val_name, val_alias);
-              switch (new_name.txt) {
-              | Identifier.IdentName({txt: id_name}) =>
-                imported := [val_name, ...imported^];
-                Some(id_name);
-              | Identifier.IdentExternal(_) => failwith("NYI")
-              };
-            | None => None
-            };
-          };
+  add_components(None, root, env0, new_comps);
+};
 
-          let root =
-            switch (check_opened(mod_, env)) {
-            | Some(path) => path
-            | None => assert(false)
-            };
+let use_full_signature = (root, env0) => {
+  let comps = get_components(find_module_descr(root, None, env0));
+  add_components(None, root, env0, comps);
+};
 
-          let new_env =
-            open_signature(
-              ~filter_components,
-              None,
-              root,
-              Some(mod_.pimp_path.txt),
-              env,
-            );
-          check_imports(
-            imported^,
-            List.map(((value, _)) => value, values),
-            mod_.pimp_path.txt,
-          );
-          Option.get(new_env);
-        | PImportAllExcept(exceptions) =>
-          let rejected = ref([]);
-          let filter_components = name =>
-            if (List.exists(
-                  id =>
-                    switch (id.txt) {
-                    | Identifier.IdentName({txt: id_name}) =>
-                      if (id_name == name) {
-                        rejected := [id, ...rejected^];
-                        true;
-                      } else {
-                        false;
-                      }
-                    | Identifier.IdentExternal(_) => failwith("NYI")
-                    },
-                  exceptions,
-                )) {
-              None;
-            } else {
-              Some(name);
-            };
-          let root =
-            switch (check_opened(mod_, env)) {
-            | Some(path) => path
-            | None => assert(false)
-            };
-
-          let new_env =
-            open_signature(
-              ~filter_components,
-              None,
-              root,
-              Some(mod_.pimp_path.txt),
-              env,
-            );
-          check_imports(rejected^, exceptions, mod_.pimp_path.txt);
-          Option.get(new_env);
-        },
-      env,
-      mod_.pimp_val,
-    );
-  Some(env);
+let use_full_signature_of_initially_included_module =
+    (~loc=Location.dummy_loc, root, env) => {
+  use_full_signature(root, env);
 };
 
 /* Read a signature from a file */
@@ -2716,7 +2621,19 @@ let report_error = ppf =>
   | No_module_file(m, Some(msg)) =>
     fprintf(ppf, "Missing file for module %s: %s", m, msg)
   | Value_not_found_in_module(_, name, path) =>
-    fprintf(ppf, "Export \"%s\" was not found in \"%s\"", name, path)
+    fprintf(ppf, "Unbound value %s in module %s", name, path)
+  | Module_not_found_in_module(_, name, path, None) =>
+    fprintf(ppf, "Unbound module %s in module %s", name, path)
+  | Module_not_found_in_module(_, name, path, Some(ty)) =>
+    fprintf(
+      ppf,
+      "Unbound module %s in module %s. Did you mean `type %s`?",
+      name,
+      path,
+      ty,
+    )
+  | Type_not_found_in_module(_, name, path) =>
+    fprintf(ppf, "Unbound type %s in module %s", name, path)
   | Cyclic_dependencies(dep, chain) =>
     fprintf(
       ppf,
@@ -2733,6 +2650,8 @@ let () =
         (
           Missing_module(loc, _, _) | Illegal_value_name(loc, _) |
           Value_not_found_in_module(loc, _, _) |
+          Module_not_found_in_module(loc, _, _, _) |
+          Type_not_found_in_module(loc, _, _) |
           Unbound_module(loc, _) |
           Unbound_label(loc, _)
         ) as err,

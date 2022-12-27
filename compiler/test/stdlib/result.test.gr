@@ -1,4 +1,4 @@
-import Result from "result"
+include "result" as Result
 
 // isOk
 assert Result.isOk(Ok(1)) == true

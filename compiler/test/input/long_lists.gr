@@ -1,4 +1,5 @@
-import * from "list";
+include "list" as List
+from List use *
 
 let rec make_list = (x, n) => {
   let rec helper = (a, b, acc) => {

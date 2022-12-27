@@ -1,7 +1,7 @@
-import Path from "path"
-import Result from "result"
-import Option from "option"
-import List from "list"
+include "path" as Path
+include "result" as Result
+include "option" as Option
+include "list" as List
 
 let fs = Path.fromString
 

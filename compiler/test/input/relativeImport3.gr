@@ -1,2 +1,3 @@
-import * from "nested/nested";
+include "nested/nested" as Nested
+from Nested use *
 j

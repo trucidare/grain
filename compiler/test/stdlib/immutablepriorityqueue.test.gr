@@ -1,6 +1,6 @@
-import ImmutablePriorityQueue from "immutablepriorityqueue"
-import List from "list"
-import Array from "array"
+include "immutablepriorityqueue" as ImmutablePriorityQueue
+include "list" as List
+include "array" as Array
 
 assert ImmutablePriorityQueue.make(compare) == ImmutablePriorityQueue.empty
 

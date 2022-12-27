@@ -1,5 +1,5 @@
-import Option from "option"
-import String from "string"
+include "option" as Option
+include "string" as String
 
 // Option.isSome
 

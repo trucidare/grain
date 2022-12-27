@@ -1,5 +1,5 @@
-import Array from "array"
-import Process from "sys/process"
+include "array" as Array
+include "sys/process" as Process
 
 // Just a smoke test
 match (Process.argv()) {

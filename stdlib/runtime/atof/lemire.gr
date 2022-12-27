@@ -29,13 +29,16 @@
  * DEALINGS IN THE SOFTWARE.
 */
 
-import WasmI32 from "runtime/unsafe/wasmi32"
-import WasmI64 from "runtime/unsafe/wasmi64"
+include "runtime/unsafe/wasmi32" as WasmI32
+include "runtime/unsafe/wasmi64" as WasmI64
 
-import { newInt32, newInt64, newFloat64 } from "runtime/dataStructures"
-import { get_POWERS5 } from "./table"
+include "runtime/dataStructures" as DataStructures
+from DataStructures use { newInt32, newInt64, newFloat64 }
+include "./table" as Table
+from Table use { get_POWERS5 }
 
-import {
+include "./common" as Common
+from Common use {
   _SMALLEST_POWER_OF_FIVE,
   _LARGEST_POWER_OF_FIVE,
   _INFINITE_POWER,
@@ -48,11 +51,11 @@ import {
   _MAX_EXPONENT_ROUND_TO_EVEN,
   fullMultiplication,
   power,
-  BiasedFp,
+  type BiasedFp,
   fpZero,
   fpInf,
   fpErr,
-} from "./common"
+}
 
 primitive (&&): (Bool, Bool) -> Bool = "@and"
 primitive (||): (Bool, Bool) -> Bool = "@or"
@@ -120,7 +123,7 @@ let computeProductApprox = (q: WasmI64, w: WasmI64, precision: WasmI64) => {
 // Returns the significant bits and a biased binary exponent that can be directly shifted into exponent bits:
 // (u64, i32)
 @unsafe
-export let computeFloat = (exponent: WasmI64, mantissa: WasmI64) => {
+expose let computeFloat = (exponent: WasmI64, mantissa: WasmI64) => {
   let (==) = WasmI64.eq
   let (<) = WasmI64.ltS
   let (<=) = WasmI64.leS

@@ -1,8 +1,9 @@
-import Array from "array"
-import List from "list"
-import Option from "option"
-import Result from "result"
-import {
+include "array" as Array
+include "list" as List
+include "option" as Option
+include "result" as Result
+include "regex" as Regex
+from Regex use {
   make,
   find,
   findRange,
@@ -12,8 +13,8 @@ import {
   replaceAll,
   split,
   splitAll,
-  MatchResult,
-} from "regex"
+  type MatchResult,
+}
 
 let flattenResult = (mr: MatchResult) => {
   let otherGroups = Array.init(mr.numGroups - 1, n => mr.group(n + 1))

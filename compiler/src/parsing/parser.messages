@@ -14,7 +14,7 @@ program: AT LIDENT EOL WHILE
 ##
 ## Ends in an error in state: 439.
 ##
-## list(attribute) -> attribute . list(attribute) [ TYPE RECORD LET IMPORT EXPORT ENUM ]
+## list(attribute) -> attribute . list(attribute) [ TYPE RECORD LET INCLUDE EXPOSE ENUM ]
 ##
 ## The known suffix of the stack is as follows:
 ## attribute
@@ -31,8 +31,8 @@ program: AT LIDENT WHILE
 ##
 ## Ends in an error in state: 185.
 ##
-## attribute -> AT id_str . loption(attribute_arguments) [ TYPE RECORD LET IMPORT EXPORT ENUM AT ]
-## attribute -> AT id_str . loption(attribute_arguments) eols [ TYPE RECORD LET IMPORT EXPORT ENUM AT ]
+## attribute -> AT id_str . loption(attribute_arguments) [ TYPE RECORD LET INCLUDE EXPOSE ENUM AT ]
+## attribute -> AT id_str . loption(attribute_arguments) eols [ TYPE RECORD LET INCLUDE EXPOSE ENUM AT ]
 ##
 ## The known suffix of the stack is as follows:
 ## AT id_str
@@ -41,8 +41,8 @@ program: AT WHILE
 ##
 ## Ends in an error in state: 184.
 ##
-## attribute -> AT . id_str loption(attribute_arguments) [ TYPE RECORD LET IMPORT EXPORT ENUM AT ]
-## attribute -> AT . id_str loption(attribute_arguments) eols [ TYPE RECORD LET IMPORT EXPORT ENUM AT ]
+## attribute -> AT . id_str loption(attribute_arguments) [ TYPE RECORD LET INCLUDE EXPOSE ENUM AT ]
+## attribute -> AT . id_str loption(attribute_arguments) eols [ TYPE RECORD LET INCLUDE EXPOSE ENUM AT ]
 ##
 ## The known suffix of the stack is as follows:
 ## AT
@@ -51,8 +51,8 @@ program: AT LIDENT LPAREN RPAREN WHILE
 ##
 ## Ends in an error in state: 194.
 ##
-## attribute -> AT id_str loption(attribute_arguments) . [ TYPE RECORD LET IMPORT EXPORT ENUM AT ]
-## attribute -> AT id_str loption(attribute_arguments) . eols [ TYPE RECORD LET IMPORT EXPORT ENUM AT ]
+## attribute -> AT id_str loption(attribute_arguments) . [ TYPE RECORD LET INCLUDE EXPOSE ENUM AT ]
+## attribute -> AT id_str loption(attribute_arguments) . eols [ TYPE RECORD LET INCLUDE EXPOSE ENUM AT ]
 ##
 ## The known suffix of the stack is as follows:
 ## AT id_str loption(attribute_arguments)
@@ -79,8 +79,8 @@ program: AT LIDENT LPAREN WHILE
 ##
 ## Ends in an error in state: 186.
 ##
-## attribute_arguments -> lparen . rparen [ TYPE RECORD LET IMPORT EXPORT EOL ENUM AT ]
-## attribute_arguments -> lparen . lseparated_nonempty_list_inner(comma,attribute_argument) rparen [ TYPE RECORD LET IMPORT EXPORT EOL ENUM AT ]
+## attribute_arguments -> lparen . rparen [ TYPE RECORD LET INCLUDE EXPOSE EOL ENUM AT ]
+## attribute_arguments -> lparen . lseparated_nonempty_list_inner(comma,attribute_argument) rparen [ TYPE RECORD LET INCLUDE EXPOSE EOL ENUM AT ]
 ##
 ## The known suffix of the stack is as follows:
 ## lparen
@@ -98,7 +98,7 @@ program: AT LIDENT LPAREN STRING WHILE
 ##
 ## Ends in an error in state: 189.
 ##
-## attribute_arguments -> lparen lseparated_nonempty_list_inner(comma,attribute_argument) . rparen [ TYPE RECORD LET IMPORT EXPORT EOL ENUM AT ]
+## attribute_arguments -> lparen lseparated_nonempty_list_inner(comma,attribute_argument) . rparen [ TYPE RECORD LET INCLUDE EXPOSE EOL ENUM AT ]
 ## lseparated_nonempty_list_inner(comma,attribute_argument) -> lseparated_nonempty_list_inner(comma,attribute_argument) . comma attribute_argument [ RPAREN EOL COMMA ]
 ##
 ## The known suffix of the stack is as follows:
@@ -292,14 +292,14 @@ program: ENUM UIDENT LBRACE UIDENT RBRACE COMMA EOL WHILE
 ## In state 5, spurious reduction of production eols -> nonempty_list(eol)
 ## In state 96, spurious reduction of production comma -> COMMA eols
 ##
-program: ENUM UIDENT LBRACE UIDENT RBRACE COMMA EXPORT WHILE
+program: ENUM UIDENT LBRACE UIDENT RBRACE COMMA EXPOSE WHILE
 ##
 ## Ends in an error in state: 987.
 ##
-## data_declaration_stmt -> EXPORT . data_declaration [ SEMI EOL EOF COMMA ]
+## data_declaration_stmt -> EXPOSE . data_declaration [ SEMI EOL EOF COMMA ]
 ##
 ## The known suffix of the stack is as follows:
-## EXPORT
+## EXPOSE
 ##
 
 Mutually recursive data declarations are separated by commas, but cannot be mixed with other kinds of expressions.
@@ -476,7 +476,7 @@ program: EOL WASMI64 THICKARROW
 ## In state 819, spurious reduction of production lseparated_nonempty_list_inner(eos,toplevel_stmt) -> toplevel_stmt
 ##
 
-Expected an infix operator to continue the expression or a newline character to terminate it.
+Expected a newline character to terminate the statement.
 
 program: LBRACE UIDENT COLON EOL UNDERSCORE
 ##
@@ -901,33 +901,33 @@ program: EXCEPTION WHILE
 
 Expected a capitalized name for the exception.
 
-program: EXPORT LET MUT WHILE
+program: EXPOSE LET MUT WHILE
 ##
 ## Ends in an error in state: 942.
 ##
-## export_stmt -> attributes EXPORT LET MUT . value_binds [ SEMI EOL EOF ]
+## export_stmt -> attributes EXPOSE LET MUT . value_binds [ SEMI EOL EOF ]
 ##
 ## The known suffix of the stack is as follows:
-## attributes EXPORT LET MUT
+## attributes EXPOSE LET MUT
 ##
-program: EXPORT LET REC MUT WHILE
+program: EXPOSE LET REC MUT WHILE
 ##
 ## Ends in an error in state: 939.
 ##
-## export_stmt -> attributes EXPORT LET REC MUT . value_binds [ SEMI EOL EOF ]
+## export_stmt -> attributes EXPOSE LET REC MUT . value_binds [ SEMI EOL EOF ]
 ##
 ## The known suffix of the stack is as follows:
-## attributes EXPORT LET REC MUT
+## attributes EXPOSE LET REC MUT
 ##
-program: EXPORT LET REC WHILE
+program: EXPOSE LET REC WHILE
 ##
 ## Ends in an error in state: 938.
 ##
-## export_stmt -> attributes EXPORT LET REC . value_binds [ SEMI EOL EOF ]
-## export_stmt -> attributes EXPORT LET REC . MUT value_binds [ SEMI EOL EOF ]
+## export_stmt -> attributes EXPOSE LET REC . value_binds [ SEMI EOL EOF ]
+## export_stmt -> attributes EXPOSE LET REC . MUT value_binds [ SEMI EOL EOF ]
 ##
 ## The known suffix of the stack is as follows:
-## attributes EXPORT LET REC
+## attributes EXPOSE LET REC
 ##
 program: LBRACE LET MUT WHILE
 ##
@@ -968,17 +968,17 @@ program: LET REC MUT WHILE
 
 Expected a binding pattern, such as an identifier.
 
-program: EXPORT LET WHILE
+program: EXPOSE LET WHILE
 ##
 ## Ends in an error in state: 937.
 ##
-## export_stmt -> attributes EXPORT LET . REC value_binds [ SEMI EOL EOF ]
-## export_stmt -> attributes EXPORT LET . value_binds [ SEMI EOL EOF ]
-## export_stmt -> attributes EXPORT LET . REC MUT value_binds [ SEMI EOL EOF ]
-## export_stmt -> attributes EXPORT LET . MUT value_binds [ SEMI EOL EOF ]
+## export_stmt -> attributes EXPOSE LET . REC value_binds [ SEMI EOL EOF ]
+## export_stmt -> attributes EXPOSE LET . value_binds [ SEMI EOL EOF ]
+## export_stmt -> attributes EXPOSE LET . REC MUT value_binds [ SEMI EOL EOF ]
+## export_stmt -> attributes EXPOSE LET . MUT value_binds [ SEMI EOL EOF ]
 ##
 ## The known suffix of the stack is as follows:
-## attributes EXPORT LET
+## attributes EXPOSE LET
 ##
 program: LBRACE LET WHILE
 ##
@@ -1007,85 +1007,6 @@ program: LET WHILE
 
 Expected the keyword `rec`, the keyword `mut`, or a binding pattern, such as an identifier.
 
-program: EXPORT STAR EXCEPT UIDENT COMMA EOL WHILE
-##
-## Ends in an error in state: 931.
-##
-## lseparated_nonempty_list_inner(comma,export_id_str) -> lseparated_nonempty_list_inner(comma,export_id_str) comma . export_id_str [ SEMI EOL EOF COMMA ]
-##
-## The known suffix of the stack is as follows:
-## lseparated_nonempty_list_inner(comma,export_id_str) comma
-##
-## WARNING: This example involves spurious reductions.
-## This implies that, although the LR(1) items shown above provide an
-## accurate view of the past (what has been recognized so far), they
-## may provide an INCOMPLETE view of the future (what was expected next).
-## In state 3, spurious reduction of production nonempty_list(eol) -> EOL
-## In state 5, spurious reduction of production eols -> nonempty_list(eol)
-## In state 96, spurious reduction of production comma -> COMMA eols
-##
-
-Expected an identifier to exclude from the export.
-
-program: EXPORT STAR EXCEPT UIDENT COMMA UIDENT WHILE
-##
-## Ends in an error in state: 930.
-##
-## export_exception -> EXCEPT lseparated_nonempty_list_inner(comma,export_id_str) . [ SEMI EOL EOF ]
-## lseparated_nonempty_list_inner(comma,export_id_str) -> lseparated_nonempty_list_inner(comma,export_id_str) . comma export_id_str [ SEMI EOL EOF COMMA ]
-##
-## The known suffix of the stack is as follows:
-## EXCEPT lseparated_nonempty_list_inner(comma,export_id_str)
-##
-
-Expected a comma followed by another identifier to exclude or a newline character to complete the export statement.
-
-program: EXPORT STAR EXCEPT WHILE
-##
-## Ends in an error in state: 928.
-##
-## export_exception -> EXCEPT . lseparated_nonempty_list_inner(comma,export_id_str) [ SEMI EOL EOF ]
-##
-## The known suffix of the stack is as follows:
-## EXCEPT
-##
-
-Expected an identifier to exclude from the export.
-
-program: EXPORT STAR WHILE
-##
-## Ends in an error in state: 927.
-##
-## export_stmt -> attributes EXPORT STAR . option(export_exception) [ SEMI EOL EOF ]
-##
-## The known suffix of the stack is as follows:
-## attributes EXPORT STAR
-##
-
-Expected the keyword `except` followed by comma-separated identifiers to exclude or a newline character to complete the statement.
-
-program: EXPORT UIDENT AS UIDENT WHILE
-##
-## Ends in an error in state: 979.
-##
-## separated_nonempty_list(comma,aliasable(any_id_str)) -> aliasable(any_id_str) . [ SEMI EOL EOF ]
-## separated_nonempty_list(comma,aliasable(any_id_str)) -> aliasable(any_id_str) . comma separated_nonempty_list(comma,aliasable(any_id_str)) [ SEMI EOL EOF ]
-##
-## The known suffix of the stack is as follows:
-## aliasable(any_id_str)
-##
-
-Expected a comma followed by another identifier to export or a newline character to complete the statement.
-
-program: EXPORT UIDENT AS WHILE
-##
-## Ends in an error in state: 975.
-##
-## as_prefix(any_id_str) -> AS . any_id_str [ SEMI EOL EOF COMMA ]
-##
-## The known suffix of the stack is as follows:
-## AS
-##
 program: LET NUMBER_INT AS WHILE
 ##
 ## Ends in an error in state: 386.
@@ -1115,55 +1036,23 @@ program: LET NUMBER_INT AS EOL WHILE
 
 Expected an identifier to use as an alias.
 
-program: EXPORT UIDENT COMMA EOL WHILE
-##
-## Ends in an error in state: 980.
-##
-## separated_nonempty_list(comma,aliasable(any_id_str)) -> aliasable(any_id_str) comma . separated_nonempty_list(comma,aliasable(any_id_str)) [ SEMI EOL EOF ]
-##
-## The known suffix of the stack is as follows:
-## aliasable(any_id_str) comma
-##
-## WARNING: This example involves spurious reductions.
-## This implies that, although the LR(1) items shown above provide an
-## accurate view of the past (what has been recognized so far), they
-## may provide an INCOMPLETE view of the future (what was expected next).
-## In state 3, spurious reduction of production nonempty_list(eol) -> EOL
-## In state 5, spurious reduction of production eols -> nonempty_list(eol)
-## In state 96, spurious reduction of production comma -> COMMA eols
-##
-
-Expected another identifier to export.
-
-program: EXPORT UIDENT WHILE
-##
-## Ends in an error in state: 974.
-##
-## aliasable(any_id_str) -> any_id_str . option(as_prefix(any_id_str)) [ SEMI EOL EOF COMMA ]
-##
-## The known suffix of the stack is as follows:
-## any_id_str
-##
-
-Expected a comma followed by another identifier to export or a newline character to complete the statement.
-
-program: EXPORT WHILE
+program: EXPOSE WHILE
 ##
 ## Ends in an error in state: 926.
 ##
-## data_declaration_stmt -> EXPORT . data_declaration [ SEMI EOL EOF COMMA ]
-## export_stmt -> attributes EXPORT . LET REC value_binds [ SEMI EOL EOF ]
-## export_stmt -> attributes EXPORT . LET value_binds [ SEMI EOL EOF ]
-## export_stmt -> attributes EXPORT . LET REC MUT value_binds [ SEMI EOL EOF ]
-## export_stmt -> attributes EXPORT . LET MUT value_binds [ SEMI EOL EOF ]
-## export_stmt -> attributes EXPORT . foreign_stmt [ SEMI EOL EOF ]
-## export_stmt -> attributes EXPORT . primitive_stmt [ SEMI EOL EOF ]
-## export_stmt -> attributes EXPORT . exception_stmt [ SEMI EOL EOF ]
-## export_stmt -> attributes EXPORT . separated_nonempty_list(comma,aliasable(any_id_str)) [ SEMI EOL EOF ]
-## export_stmt -> attributes EXPORT . STAR option(export_exception) [ SEMI EOL EOF ]
+## data_declaration_stmt -> EXPOSE . data_declaration [ SEMI EOL EOF COMMA ]
+## export_stmt -> attributes EXPOSE . LET REC value_binds [ SEMI EOL EOF ]
+## export_stmt -> attributes EXPOSE . LET value_binds [ SEMI EOL EOF ]
+## export_stmt -> attributes EXPOSE . LET REC MUT value_binds [ SEMI EOL EOF ]
+## export_stmt -> attributes EXPOSE . LET MUT value_binds [ SEMI EOL EOF ]
+## export_stmt -> attributes EXPOSE . foreign_stmt [ SEMI EOL EOF ]
+## export_stmt -> attributes EXPOSE . primitive_stmt [ SEMI EOL EOF ]
+## export_stmt -> attributes EXPOSE . exception_stmt [ SEMI EOL EOF ]
+## export_stmt -> attributes EXPOSE . separated_nonempty_list(comma,aliasable(any_id_str)) [ SEMI EOL EOF ]
+## export_stmt -> attributes EXPOSE . STAR option(export_exception) [ SEMI EOL EOF ]
 ##
 ## The known suffix of the stack is as follows:
-## attributes EXPORT
+## attributes EXPOSE
 ##
 
 Expected a let binding, data declaration, exception, comma-separated list of identifiers, or `*` to export all values.
@@ -2574,427 +2463,15 @@ program: IF WHILE
 
 Expected `(` followed by a condition expression.
 
-program: IMPORT FOREIGN WASM LIDENT COLON EOL UIDENT AS LIDENT WHILE
-##
-## Ends in an error in state: 900.
-##
-## foreign_stmt -> FOREIGN WASM id_str COLON eols typ option(as_prefix(id_str)) . FROM file_path [ SEMI EOL EOF ]
-##
-## The known suffix of the stack is as follows:
-## FOREIGN WASM id_str COLON eols typ option(as_prefix(id_str))
-##
-program: IMPORT FOREIGN WASM LIDENT COLON UIDENT AS LIDENT WHILE
-##
-## Ends in an error in state: 893.
-##
-## foreign_stmt -> FOREIGN WASM id_str COLON typ option(as_prefix(id_str)) . FROM file_path [ SEMI EOL EOF ]
-##
-## The known suffix of the stack is as follows:
-## FOREIGN WASM id_str COLON typ option(as_prefix(id_str))
-##
-
-Expected the keyword `from` followed by a file path.
-
-program: IMPORT FOREIGN WASM LIDENT COLON EOL UIDENT FROM WHILE
-##
-## Ends in an error in state: 901.
-##
-## foreign_stmt -> FOREIGN WASM id_str COLON eols typ option(as_prefix(id_str)) FROM . file_path [ SEMI EOL EOF ]
-##
-## The known suffix of the stack is as follows:
-## FOREIGN WASM id_str COLON eols typ option(as_prefix(id_str)) FROM
-##
-program: IMPORT FOREIGN WASM LIDENT COLON UIDENT FROM WHILE
-##
-## Ends in an error in state: 894.
-##
-## foreign_stmt -> FOREIGN WASM id_str COLON typ option(as_prefix(id_str)) FROM . file_path [ SEMI EOL EOF ]
-##
-## The known suffix of the stack is as follows:
-## FOREIGN WASM id_str COLON typ option(as_prefix(id_str)) FROM
-##
-program: IMPORT UIDENT FROM WHILE
-##
-## Ends in an error in state: 905.
-##
-## import_stmt -> IMPORT lseparated_nonempty_list_inner(comma,import_shape) option(comma) FROM . file_path [ SEMI EOL EOF ]
-##
-## The known suffix of the stack is as follows:
-## IMPORT lseparated_nonempty_list_inner(comma,import_shape) option(comma) FROM
-##
-
-Expected a file path surrounded by `”`.
-
-program: IMPORT FOREIGN WASM LIDENT COLON EOL UIDENT WHEN
-##
-## Ends in an error in state: 899.
-##
-## foreign_stmt -> FOREIGN WASM id_str COLON eols typ . option(as_prefix(id_str)) FROM file_path [ SEMI EOL EOF ]
-##
-## The known suffix of the stack is as follows:
-## FOREIGN WASM id_str COLON eols typ
-##
-## WARNING: This example involves spurious reductions.
-## This implies that, although the LR(1) items shown above provide an
-## accurate view of the past (what has been recognized so far), they
-## may provide an INCOMPLETE view of the future (what was expected next).
-## In state 89, spurious reduction of production type_id -> lseparated_nonempty_list_inner(dot,type_id_str)
-## In state 79, spurious reduction of production data_typ -> type_id
-## In state 106, spurious reduction of production typ -> data_typ
-##
-program: IMPORT FOREIGN WASM LIDENT COLON UIDENT WHEN
-##
-## Ends in an error in state: 890.
-##
-## foreign_stmt -> FOREIGN WASM id_str COLON typ . option(as_prefix(id_str)) FROM file_path [ SEMI EOL EOF ]
-##
-## The known suffix of the stack is as follows:
-## FOREIGN WASM id_str COLON typ
-##
-## WARNING: This example involves spurious reductions.
-## This implies that, although the LR(1) items shown above provide an
-## accurate view of the past (what has been recognized so far), they
-## may provide an INCOMPLETE view of the future (what was expected next).
-## In state 89, spurious reduction of production type_id -> lseparated_nonempty_list_inner(dot,type_id_str)
-## In state 79, spurious reduction of production data_typ -> type_id
-## In state 106, spurious reduction of production typ -> data_typ
-##
-
-Expected an alias, like `as foo`, for the foreign value's name or the keyword `from` followed by a file path.
-
-program: IMPORT FOREIGN WASM LIDENT COLON EOL WHILE
-##
-## Ends in an error in state: 898.
-##
-## foreign_stmt -> FOREIGN WASM id_str COLON eols . typ option(as_prefix(id_str)) FROM file_path [ SEMI EOL EOF ]
-##
-## The known suffix of the stack is as follows:
-## FOREIGN WASM id_str COLON eols
-##
-## WARNING: This example involves spurious reductions.
-## This implies that, although the LR(1) items shown above provide an
-## accurate view of the past (what has been recognized so far), they
-## may provide an INCOMPLETE view of the future (what was expected next).
-## In state 3, spurious reduction of production nonempty_list(eol) -> EOL
-## In state 5, spurious reduction of production eols -> nonempty_list(eol)
-##
-program: IMPORT FOREIGN WASM LIDENT COLON WHILE
-##
-## Ends in an error in state: 889.
-##
-## foreign_stmt -> FOREIGN WASM id_str COLON . typ option(as_prefix(id_str)) FROM file_path [ SEMI EOL EOF ]
-## foreign_stmt -> FOREIGN WASM id_str COLON . eols typ option(as_prefix(id_str)) FROM file_path [ SEMI EOL EOF ]
-##
-## The known suffix of the stack is as follows:
-## FOREIGN WASM id_str COLON
-##
-
-Expected a type for the foreign value.
-
-program: IMPORT FOREIGN WASM LIDENT COLON UIDENT AS WHILE
-##
-## Ends in an error in state: 891.
-##
-## as_prefix(id_str) -> AS . id_str [ FROM ]
-##
-## The known suffix of the stack is as follows:
-## AS
-##
-
-Expected an identifier to use as the alias.
-
-program: IMPORT FOREIGN WASM LIDENT WHILE
-##
-## Ends in an error in state: 888.
-##
-## foreign_stmt -> FOREIGN WASM id_str . COLON typ option(as_prefix(id_str)) FROM file_path [ SEMI EOL EOF ]
-## foreign_stmt -> FOREIGN WASM id_str . COLON eols typ option(as_prefix(id_str)) FROM file_path [ SEMI EOL EOF ]
-##
-## The known suffix of the stack is as follows:
-## FOREIGN WASM id_str
-##
-
-Expected a type annotation for the foreign value.
-
-program: IMPORT FOREIGN WASM WHILE
-##
-## Ends in an error in state: 887.
-##
-## foreign_stmt -> FOREIGN WASM . id_str COLON typ option(as_prefix(id_str)) FROM file_path [ SEMI EOL EOF ]
-## foreign_stmt -> FOREIGN WASM . id_str COLON eols typ option(as_prefix(id_str)) FROM file_path [ SEMI EOL EOF ]
-##
-## The known suffix of the stack is as follows:
-## FOREIGN WASM
-##
-
-Expected an identifier for the foreign value.
-
-program: IMPORT FOREIGN WHILE
-##
-## Ends in an error in state: 886.
-##
-## foreign_stmt -> FOREIGN . WASM id_str COLON typ option(as_prefix(id_str)) FROM file_path [ SEMI EOL EOF ]
-## foreign_stmt -> FOREIGN . WASM id_str COLON eols typ option(as_prefix(id_str)) FROM file_path [ SEMI EOL EOF ]
-##
-## The known suffix of the stack is as follows:
-## FOREIGN
-##
-
-Expected the keyword `wasm`.
-
-program: IMPORT LBRACE UIDENT AS LIDENT WHILE
-##
-## Ends in an error in state: 911.
-##
-## import_ids -> lseparated_nonempty_list_inner(comma,aliasable(id)) . option(comma) [ RBRACE EOL ]
-## lseparated_nonempty_list_inner(comma,aliasable(id)) -> lseparated_nonempty_list_inner(comma,aliasable(id)) . comma aliasable(id) [ RBRACE EOL COMMA ]
-##
-## The known suffix of the stack is as follows:
-## lseparated_nonempty_list_inner(comma,aliasable(id))
-##
-
-Expected a comma followed by more imports or `}` to complete the imports block.
-
-program: IMPORT LBRACE UIDENT AS WHILE
-##
-## Ends in an error in state: 915.
-##
-## as_prefix(id) -> AS . id [ RBRACE EOL COMMA ]
-##
-## The known suffix of the stack is as follows:
-## AS
-##
-
-Expected an identifier to use as an alias.
-
-program: IMPORT LBRACE UIDENT COMMA EOL WHILE
-##
-## Ends in an error in state: 913.
-##
-## lseparated_nonempty_list_inner(comma,aliasable(id)) -> lseparated_nonempty_list_inner(comma,aliasable(id)) comma . aliasable(id) [ RBRACE EOL COMMA ]
-## option(comma) -> comma . [ RBRACE EOL ]
-##
-## The known suffix of the stack is as follows:
-## lseparated_nonempty_list_inner(comma,aliasable(id)) comma
-##
-## WARNING: This example involves spurious reductions.
-## This implies that, although the LR(1) items shown above provide an
-## accurate view of the past (what has been recognized so far), they
-## may provide an INCOMPLETE view of the future (what was expected next).
-## In state 3, spurious reduction of production nonempty_list(eol) -> EOL
-## In state 5, spurious reduction of production eols -> nonempty_list(eol)
-## In state 96, spurious reduction of production comma -> COMMA eols
-##
-
-Expected an identifier to import or `}` to complete the imports block.
-
-program: IMPORT LBRACE UIDENT EOL WHILE
-##
-## Ends in an error in state: 200.
-##
-## rbrace -> eols . RBRACE [ WHEN THICKARROW STAR SLASH SEMI RPAREN RCARET RBRACK RBRACE PIPE LPAREN LCARET LBRACK INFIX_90 INFIX_80 INFIX_70 INFIX_60 INFIX_50 INFIX_40 INFIX_30 INFIX_120 INFIX_110 INFIX_100 GETS FROM EQUAL EOL EOF ELSE DOT DASH COMMA COLON AS ]
-##
-## The known suffix of the stack is as follows:
-## eols
-##
-## WARNING: This example involves spurious reductions.
-## This implies that, although the LR(1) items shown above provide an
-## accurate view of the past (what has been recognized so far), they
-## may provide an INCOMPLETE view of the future (what was expected next).
-## In state 3, spurious reduction of production nonempty_list(eol) -> EOL
-## In state 5, spurious reduction of production eols -> nonempty_list(eol)
-##
-
-Expected `}` to complete the block.
-
-program: IMPORT LBRACE UIDENT THICKARROW
-##
-## Ends in an error in state: 914.
-##
-## aliasable(id) -> id . option(as_prefix(id)) [ RBRACE EOL COMMA ]
-##
-## The known suffix of the stack is as follows:
-## id
-##
-## WARNING: This example involves spurious reductions.
-## This implies that, although the LR(1) items shown above provide an
-## accurate view of the past (what has been recognized so far), they
-## may provide an INCOMPLETE view of the future (what was expected next).
-## In state 129, spurious reduction of production id -> lseparated_nonempty_list_inner(dot,type_id_str)
-##
-
-Expected an alias like`as foo`, a comma followed by another identifier, or `}` to complete the block.
-
-program: IMPORT LBRACE WHILE
-##
-## Ends in an error in state: 908.
-##
-## import_shape -> lbrace . option(import_ids) rbrace [ FROM COMMA ]
-##
-## The known suffix of the stack is as follows:
-## lbrace
-##
-## WARNING: This example involves spurious reductions.
-## This implies that, although the LR(1) items shown above provide an
-## accurate view of the past (what has been recognized so far), they
-## may provide an INCOMPLETE view of the future (what was expected next).
-## In state 21, spurious reduction of production lbrace -> LBRACE
-##
-
-Expected a list of comma-separated identifiers.
-
-program: IMPORT LPAREN WHILE
-##
-## Ends in an error in state: 132.
-##
-## id_str -> lparen . special_op rparen [ WHEN TYPE THICKARROW STAR SLASH SEMI RPAREN RECORD RCARET RBRACK RBRACE PIPE LPAREN LET LCARET LBRACK INFIX_ASSIGNMENT_10 INFIX_90 INFIX_80 INFIX_70 INFIX_60 INFIX_50 INFIX_40 INFIX_30 INFIX_120 INFIX_110 INFIX_100 IMPORT GETS FROM EXPORT EQUAL EOL EOF ENUM ELSE DOT DASH COMMA COLON AT AS ]
-##
-## The known suffix of the stack is as follows:
-## lparen
-##
-## WARNING: This example involves spurious reductions.
-## This implies that, although the LR(1) items shown above provide an
-## accurate view of the past (what has been recognized so far), they
-## may provide an INCOMPLETE view of the future (what was expected next).
-## In state 2, spurious reduction of production lparen -> LPAREN
-##
-
-Expected an infix or prefix operator, e.g. `+`, `-`, `!`.
-
-program: IMPORT STAR EXCEPT LBRACE UIDENT COMMA EOL WHILE
-##
-## Ends in an error in state: 881.
-##
-## lseparated_nonempty_list_inner(comma,id) -> lseparated_nonempty_list_inner(comma,id) comma . id [ RBRACE EOL COMMA ]
-## option(comma) -> comma . [ RBRACE EOL ]
-##
-## The known suffix of the stack is as follows:
-## lseparated_nonempty_list_inner(comma,id) comma
-##
-## WARNING: This example involves spurious reductions.
-## This implies that, although the LR(1) items shown above provide an
-## accurate view of the past (what has been recognized so far), they
-## may provide an INCOMPLETE view of the future (what was expected next).
-## In state 3, spurious reduction of production nonempty_list(eol) -> EOL
-## In state 5, spurious reduction of production eols -> nonempty_list(eol)
-## In state 96, spurious reduction of production comma -> COMMA eols
-##
-
-Expected an identifier or `}` to complete the block.
-
-program: IMPORT STAR EXCEPT LBRACE UIDENT THICKARROW
-##
-## Ends in an error in state: 878.
-##
-## import_exception -> EXCEPT lbrace lseparated_nonempty_list_inner(comma,id) . option(comma) rbrace [ FROM COMMA ]
-## lseparated_nonempty_list_inner(comma,id) -> lseparated_nonempty_list_inner(comma,id) . comma id [ RBRACE EOL COMMA ]
-##
-## The known suffix of the stack is as follows:
-## EXCEPT lbrace lseparated_nonempty_list_inner(comma,id)
-##
-## WARNING: This example involves spurious reductions.
-## This implies that, although the LR(1) items shown above provide an
-## accurate view of the past (what has been recognized so far), they
-## may provide an INCOMPLETE view of the future (what was expected next).
-## In state 129, spurious reduction of production id -> lseparated_nonempty_list_inner(dot,type_id_str)
-## In state 883, spurious reduction of production lseparated_nonempty_list_inner(comma,id) -> id
-##
-
-Expected a comma followed by an identifier or `}` to end the block.
-
-program: IMPORT STAR EXCEPT LBRACE WHILE
-##
-## Ends in an error in state: 877.
-##
-## import_exception -> EXCEPT lbrace . lseparated_nonempty_list_inner(comma,id) option(comma) rbrace [ FROM COMMA ]
-##
-## The known suffix of the stack is as follows:
-## EXCEPT lbrace
-##
-## WARNING: This example involves spurious reductions.
-## This implies that, although the LR(1) items shown above provide an
-## accurate view of the past (what has been recognized so far), they
-## may provide an INCOMPLETE view of the future (what was expected next).
-## In state 21, spurious reduction of production lbrace -> LBRACE
-##
-
-Expected a comma-separated list of identifiers to exclude from the import.
-
-program: IMPORT STAR EXCEPT WHILE
-##
-## Ends in an error in state: 876.
-##
-## import_exception -> EXCEPT . lbrace lseparated_nonempty_list_inner(comma,id) option(comma) rbrace [ FROM COMMA ]
-##
-## The known suffix of the stack is as follows:
-## EXCEPT
-##
-
-Expected `{` followed by a comma-separated list of identifiers to exclude from the import, followed by `}` to complete the block.
-
-program: IMPORT STAR WHILE
-##
-## Ends in an error in state: 875.
-##
-## import_shape -> STAR . option(import_exception) [ FROM COMMA ]
-##
-## The known suffix of the stack is as follows:
-## STAR
-##
-
-Expected the keyword `except` followed by comma-separated identifiers surrounded by `{`/`}`, a comma followed by a module name, or the keyword `from` followed by a file path.
-
-program: IMPORT UIDENT COMMA EOL WHILE
-##
-## Ends in an error in state: 907.
-##
-## lseparated_nonempty_list_inner(comma,import_shape) -> lseparated_nonempty_list_inner(comma,import_shape) comma . import_shape [ FROM COMMA ]
-## option(comma) -> comma . [ FROM ]
-##
-## The known suffix of the stack is as follows:
-## lseparated_nonempty_list_inner(comma,import_shape) comma
-##
-## WARNING: This example involves spurious reductions.
-## This implies that, although the LR(1) items shown above provide an
-## accurate view of the past (what has been recognized so far), they
-## may provide an INCOMPLETE view of the future (what was expected next).
-## In state 3, spurious reduction of production nonempty_list(eol) -> EOL
-## In state 5, spurious reduction of production eols -> nonempty_list(eol)
-## In state 96, spurious reduction of production comma -> COMMA eols
-##
-
-Expected another import or the `from` keyword followed by a file path.
-
-program: IMPORT UIDENT THICKARROW
-##
-## Ends in an error in state: 903.
-##
-## import_stmt -> IMPORT lseparated_nonempty_list_inner(comma,import_shape) . option(comma) FROM file_path [ SEMI EOL EOF ]
-## lseparated_nonempty_list_inner(comma,import_shape) -> lseparated_nonempty_list_inner(comma,import_shape) . comma import_shape [ FROM COMMA ]
-##
-## The known suffix of the stack is as follows:
-## IMPORT lseparated_nonempty_list_inner(comma,import_shape)
-##
-## WARNING: This example involves spurious reductions.
-## This implies that, although the LR(1) items shown above provide an
-## accurate view of the past (what has been recognized so far), they
-## may provide an INCOMPLETE view of the future (what was expected next).
-## In state 129, spurious reduction of production id -> lseparated_nonempty_list_inner(dot,type_id_str)
-## In state 923, spurious reduction of production import_shape -> id
-## In state 924, spurious reduction of production lseparated_nonempty_list_inner(comma,import_shape) -> import_shape
-##
-
-Expected a comma followed by a module identifier, `*`, a list of comma-separated identifiers surrounded by `{`/`}`, or the `from` keyword followed by a file path.
-
-program: IMPORT WHILE
+program: INCLUDE WHILE
 ##
 ## Ends in an error in state: 874.
 ##
-## import_stmt -> IMPORT . lseparated_nonempty_list_inner(comma,import_shape) option(comma) FROM file_path [ SEMI EOL EOF ]
-## toplevel_stmt -> attributes IMPORT . foreign_stmt [ SEMI EOL EOF ]
+## import_stmt -> INCLUDE . lseparated_nonempty_list_inner(comma,import_shape) option(comma) FROM file_path [ SEMI EOL EOF ]
+## toplevel_stmt -> attributes INCLUDE . foreign_stmt [ SEMI EOL EOF ]
 ##
 ## The known suffix of the stack is as follows:
-## attributes IMPORT
+## attributes INCLUDE
 ##
 
 Expected a module identifier, `*`, a list of comma-separated identifiers surrounded by `{`/`}`, or the `foreign` keyword.
@@ -4348,7 +3825,7 @@ program: LPAREN WASMI64 EOL WHILE
 ##
 ## Ends in an error in state: 113.
 ##
-## rparen -> eols . RPAREN [ WHILE WHEN WASMI64 WASMI32 WASMF64 WASMF32 VOID UIDENT TYPE TRUE THROW THICKARROW STRING STAR SLASH SEMI RPAREN RECORD RCARET RBRACK RBRACE PREFIX_150 PIPE NUMBER_INT NUMBER_FLOAT MATCH LPAREN LIDENT LET LCARET LBRACKRCARET LBRACK LBRACE INT64 INT32 INFIX_ASSIGNMENT_10 INFIX_90 INFIX_80 INFIX_70 INFIX_60 INFIX_50 INFIX_40 INFIX_30 INFIX_120 INFIX_110 INFIX_100 IMPORT IF GETS FUN FROM FOR FLOAT64 FLOAT32 FALSE FAIL EXPORT EQUAL EOL EOF ENUM ELSE DOT DASH CONTINUE COMMA COLON CHAR BREAK BIGINT AT ASSERT AS ARROW ]
+## rparen -> eols . RPAREN [ WHILE WHEN WASMI64 WASMI32 WASMF64 WASMF32 VOID UIDENT TYPE TRUE THROW THICKARROW STRING STAR SLASH SEMI RPAREN RECORD RCARET RBRACK RBRACE PREFIX_150 PIPE NUMBER_INT NUMBER_FLOAT MATCH LPAREN LIDENT LET LCARET LBRACKRCARET LBRACK LBRACE INT64 INT32 INFIX_ASSIGNMENT_10 INFIX_90 INFIX_80 INFIX_70 INFIX_60 INFIX_50 INFIX_40 INFIX_30 INFIX_120 INFIX_110 INFIX_100 INCLUDE IF GETS FUN FROM FOR FLOAT64 FLOAT32 FALSE FAIL EXPOSE EQUAL EOL EOF ENUM ELSE DOT DASH CONTINUE COMMA COLON CHAR BREAK BIGINT AT ASSERT AS ARROW ]
 ##
 ## The known suffix of the stack is as follows:
 ## eols

@@ -1,4 +1,4 @@
-import List from "list"
+include "list" as List
 
 let myList = []
 

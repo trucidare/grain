@@ -1,7 +1,7 @@
-import Bytes from "bytes"
-import Int32 from "int32"
-import Array from "array"
-import String from "string"
+include "bytes" as Bytes
+include "int32" as Int32
+include "array" as Array
+include "string" as String
 
 // Bytes.empty
 assert Bytes.empty == Bytes.empty

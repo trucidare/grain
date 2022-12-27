@@ -1,11 +1,12 @@
-import * from "list"
+include "list" as List
+from List use *
 
-export record Rec {
+expose record Rec {
   foo: List<Number>,
   bar: String,
 }
 
-export enum Poly {
+expose enum Poly {
   PList(List<Number>),
   PArray(Array<Poly>),
   PAssoc(Rec),

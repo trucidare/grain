@@ -1,4 +1,4 @@
-export enum Shape<
+expose enum Shape<
   a,
   b,
   c,
@@ -60,7 +60,7 @@ export enum Shape<
   ),
 }
 
-export enum Test {
+expose enum Test {
   Test(
     Shape<
       String,

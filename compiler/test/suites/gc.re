@@ -4,9 +4,9 @@ open Grain_tests.Runner;
 let makeGcProgram = (program, heap_size) => {
   Printf.sprintf(
     {|
-    import WasmI32 from "runtime/unsafe/wasmi32"
-    import Malloc from "runtime/malloc"
-    import Memory from "runtime/unsafe/memory"
+    include "runtime/unsafe/wasmi32" as WasmI32
+    include "runtime/malloc" as Malloc
+    include "runtime/unsafe/memory" as Memory
 
     primitive heapBase: WasmI32 = "@heap.base"
 

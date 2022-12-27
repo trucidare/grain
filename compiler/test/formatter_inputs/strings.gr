@@ -1,4 +1,4 @@
-import String from "string"
+include "string" as String
 
 let newline = "\n"
 
