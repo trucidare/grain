@@ -28,6 +28,14 @@ import foreign wasm proc_exit: WasmI32 -> Void from "wasi_snapshot_preview1"
 import foreign wasm proc_raise: WasmI32 -> WasmI32 from "wasi_snapshot_preview1"
 import foreign wasm sched_yield: () -> WasmI32 from "wasi_snapshot_preview1"
 
+// events
+import foreign wasm poll_oneoff: (
+  WasmI32,
+  WasmI32,
+  WasmI32,
+  WasmI32,
+) -> WasmI32 from "wasi_snapshot_preview1"
+
 // random
 import foreign wasm random_get: (
   WasmI32,
@@ -236,6 +244,9 @@ let _FDFLAG_DSYNC = 2n
 let _FDFLAG_NONBLOCK = 4n
 let _FDFLAG_RSYNC = 8n
 let _FDFLAG_SYNC = 16n
+
+// sublock flags
+let _SUBCLOCK_FLAG_CLOCK_ABSTIME = 1n
 
 // whence
 let _WHENCE_SET = 0n
